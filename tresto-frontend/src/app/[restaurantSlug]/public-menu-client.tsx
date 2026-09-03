@@ -64,7 +64,7 @@ type CartItem = {
 };
 
 type Props = {
-    data: RestaurantResponse;
+    data: any;
     slug: string
 };
 

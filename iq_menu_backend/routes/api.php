@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
+
+
 Route::get("/restaurant/slug" , [RestaurantController::class, "getRestaurantBySlug"]);
 Route::get("/restaurant/public-data" , [RestaurantController::class , "getPublicData"]);
 
@@ -19,6 +21,8 @@ Route::post('/login', [UserController::class, 'login'])
     ->name('login');
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get("/dashboard/tables" , [TableController::class, "index"]);
 
     Route::post('/logout', [UserController::class, 'logout'])
         ->name('logout');

@@ -14,7 +14,7 @@ export default async function RestaurantPage({
 
     const data = await getRestaurantBySlug(
         restaurantSlug
-    );
+    ); 
 
     return (
         <PublicMenuClient data={data} slug={restaurantSlug} />

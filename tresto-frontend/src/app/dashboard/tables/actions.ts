@@ -6,7 +6,7 @@ import Table from "@/models/table-model";
 
 export async function getTablesAction(): Promise<Table[]> {
     try {
-        const response = await serverFetch<Table[]>("/api/dashboard/tables");
+        const response = await serverFetch<Table[]>("/dashboard/tables");
         return response.data || [];
     } catch {
         return [];

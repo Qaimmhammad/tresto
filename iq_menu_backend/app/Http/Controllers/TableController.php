@@ -17,8 +17,16 @@ class TableController extends Controller
     /**
      * Get all tables of a branch.
      */
-    public function index(string $branchId): JsonResponse
+    public function index(Request $request): JsonResponse
     {
+        $user = $request->user();
+
+        $branchId = $user->branch_id ; 
+        if (!$branchId){
+            return response()->json([
+                "message" => "tables should be managed from a branch manager account",
+            ], 422);
+        }
         $this->authorize('viewAny', Table::class);
 
         $tables = Table::where('branch_id', $branchId)

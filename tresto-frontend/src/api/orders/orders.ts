@@ -22,8 +22,8 @@ export type CreateDineInOrderPayload = {
 export async function createOrder(
   branchId: string | number,
   data: CreateOrderPayload
-): Promise<OrderModel> {
-  return serverFetch<OrderModel>(
+) {
+  return serverFetch(
     `/restaurant/orders/${branchId}`,
     {
       method: "POST",
@@ -43,8 +43,8 @@ export async function createOrder(
 export async function createDineInOrder(
   tableId: string | number,
   data: CreateDineInOrderPayload
-): Promise<OrderModel> {
-  return serverFetch<OrderModel>(`/api/t/${tableId}/orders`, {
+) {
+  return serverFetch(`/t/${tableId}/orders`, {
     method: "POST",
     body: JSON.stringify({
       items: data.items.map((item) => ({
