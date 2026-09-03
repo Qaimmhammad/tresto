@@ -63,7 +63,7 @@ export async function deleteUserAction(id: string): Promise<void> {
   });
 }
 
-export async function getBranchesAction() : Promise<any> {
-  const response = await serverFetch("/branches");
-  return response?.data ; 
+export async function getBranchesAction(): Promise<any> {
+  const response: any = await serverFetch("/branches");
+  return response?.data;
 }

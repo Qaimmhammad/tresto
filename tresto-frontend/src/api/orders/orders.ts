@@ -59,8 +59,12 @@ export async function createDineInOrder(
 
 export async function getOrders(period: string | null) {
   if (period) { 
-    const response = await serverFetch(`/orders/get?period=${period}`);
+    const response: any = await serverFetch(`/orders/get?period=${period}`);
     return response.data ;
   }
-  else return serverFetch(`/orders/get`);
+  else {
+    const response: any = await serverFetch(`/orders/get`);
+    return response.data
+  }
+
 }

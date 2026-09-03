@@ -161,7 +161,7 @@ export default function PublicMenuClient({
     useEffect(() => {
         async function getData() {
             try {
-                const {meals, categories} =
+                const { meals, categories } =
                     await getDataAction(slug);
 
                 /*
@@ -174,20 +174,17 @@ export default function PublicMenuClient({
                  * { data: Meal[] }
                  */
 
-                const mealsData = Array.isArray(
-                    meals
-                )
-                    ? meals
-                    : meals?.data ?? [];
+                const mealsData: any = meals;
+                const categoriesData: any = categories;
 
-                const categoriesData = Array.isArray(
-                    categories
-                )
-                    ? categories
-                    : categories?.data ?? [];
+                setMeals(
+                    Array.isArray(mealsData) ? mealsData : mealsData?.data ?? []
+                );
 
-                setMeals(mealsData);
-                setCategories(categoriesData);
+                setCategories(
+                    Array.isArray(categoriesData) ? categoriesData : categoriesData?.data ?? []
+                );
+                
             } catch (error) {
                 console.error(
                     "Failed to load menu data:",
@@ -273,10 +270,10 @@ export default function PublicMenuClient({
                 return current.map((item) =>
                     item.meal.id === meal.id
                         ? {
-                              ...item,
-                              quantity:
-                                  item.quantity + 1,
-                          }
+                            ...item,
+                            quantity:
+                                item.quantity + 1,
+                        }
                         : item
                 );
             }
@@ -310,10 +307,10 @@ export default function PublicMenuClient({
             return current.map((item) =>
                 item.meal.id === mealId
                     ? {
-                          ...item,
-                          quantity:
-                              item.quantity - 1,
-                      }
+                        ...item,
+                        quantity:
+                            item.quantity - 1,
+                    }
                     : item
             );
         });
@@ -465,21 +462,21 @@ export default function PublicMenuClient({
                             className="shrink-0 rounded-full border px-5 py-2.5 text-sm font-semibold transition"
                             style={
                                 selectedCategory ===
-                                "all"
+                                    "all"
                                     ? {
-                                          backgroundColor:
-                                              primaryColor,
-                                          borderColor:
-                                              primaryColor,
-                                          color: primaryTextColor,
-                                      }
+                                        backgroundColor:
+                                            primaryColor,
+                                        borderColor:
+                                            primaryColor,
+                                        color: primaryTextColor,
+                                    }
                                     : {
-                                          backgroundColor:
-                                              "#FFFFFF",
-                                          borderColor:
-                                              `${primaryColor}35`,
-                                          color: "#4B5563",
-                                      }
+                                        backgroundColor:
+                                            "#FFFFFF",
+                                        borderColor:
+                                            `${primaryColor}35`,
+                                        color: "#4B5563",
+                                    }
                             }
                         >
                             الكل
@@ -507,19 +504,19 @@ export default function PublicMenuClient({
                                             style={
                                                 active
                                                     ? {
-                                                          backgroundColor:
-                                                              primaryColor,
-                                                          borderColor:
-                                                              primaryColor,
-                                                          color: primaryTextColor,
-                                                      }
+                                                        backgroundColor:
+                                                            primaryColor,
+                                                        borderColor:
+                                                            primaryColor,
+                                                        color: primaryTextColor,
+                                                    }
                                                     : {
-                                                          backgroundColor:
-                                                              "#FFFFFF",
-                                                          borderColor:
-                                                              `${primaryColor}35`,
-                                                          color: "#4B5563",
-                                                      }
+                                                        backgroundColor:
+                                                            "#FFFFFF",
+                                                        borderColor:
+                                                            `${primaryColor}35`,
+                                                        color: "#4B5563",
+                                                    }
                                             }
                                         >
                                             {
@@ -678,7 +675,7 @@ export default function PublicMenuClient({
 
                                                     {meal.is_available &&
                                                         (quantity ===
-                                                        0 ? (
+                                                            0 ? (
                                                             <button
                                                                 type="button"
                                                                 onClick={() =>
