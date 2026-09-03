@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { ArrowRight, Utensils, ShoppingBag, Truck, Loader2 } from "lucide-react";
 import Link from "next/link";
-import { createOrder } from "@/api/orders/orders"  ;
-import { CreateOrderPayload , OrderItemPayload} from "@/api/orders/orders";
+import { createOrderAction, type OrderItemPayload } from "./action";
 
 export type CartItem = {
     mealId: string;
@@ -44,12 +43,11 @@ export default function CheckoutPage({
         }));
 
         try {
-            
-                await createOrder(selectedBranchId, {
-                    items: itemsPayload,
-                    notes: notes || undefined,
-                    totalAmount: totalAmount,
-                });
+            await createOrderAction(selectedBranchId, {
+                items: itemsPayload,
+                notes: notes || undefined,
+                totalAmount: totalAmount,
+            });
 
             alert("تم إرسال الطلب بنجاح!");
         } catch (err: any) {
