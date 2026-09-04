@@ -38,10 +38,11 @@ export async function POST(request: Request) {
     return NextResponse.json({
       message: data.message,
     })
-  } catch {
+  } catch (error){
     return NextResponse.json(
       {
         message: "Login failed",
+        error: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }
     )
