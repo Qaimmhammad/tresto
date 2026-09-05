@@ -20,7 +20,7 @@ return new class extends Migration
             $table->unsignedBigInteger("price");
             $table->string("image_url")->nullable();
             $table->boolean("is_available")->default(true);
-            $table->json("options");
+            $table->json("options")->nullable();
             $table->timestamps();
         });
     }

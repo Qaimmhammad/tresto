@@ -30,10 +30,19 @@ export default async function serverFetch<T>(
   )
 
   if (!response.ok) {
+    const responseText = await response.text();
+
+    console.error("========== API ERROR ==========");
+    console.error("URL:", `${BASE_API_URL}${endpoint}`);
+    console.error("Method:", options?.method ?? "GET");
+    console.error("Status:", response.status);
+    console.error("Response:", responseText);
+    console.error("================================");
+
     throw new Error(
-      `API request failed with status ${response.status}`
-    )
-  }
+        `API request failed: ${options?.method ?? "GET"} ${BASE_API_URL}${endpoint} → ${response.status} ${responseText}`
+    );
+}
 
   return response.json() as Promise<T>
 }

@@ -8,7 +8,7 @@ export type CreateMealPayload = {
   price: number
   isAvailable?: boolean
   imageUrl: string | null
-  options: {
+  options?: {
     name: string;
     price: string;
   }[] | null
@@ -44,7 +44,7 @@ export async function createMeal(data: CreateMealPayload): Promise<MealModel> {
 }
 
 export async function getMeal(mealId: string | number): Promise<MealModel> {
-  return serverFetch<MealModel>(`/api/meals/${mealId}`)
+  return serverFetch<MealModel>(`/meals/${mealId}`)
 }
 
 export async function updateMeal(
