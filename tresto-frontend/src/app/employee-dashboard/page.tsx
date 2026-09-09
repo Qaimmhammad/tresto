@@ -20,7 +20,7 @@ export default async function OrdersPage() {
 
                 <OrdersClient
                     initialOrders={orders}
-                    branchId={user?.branch?.branchId}
+                    branchId={user?.user.branch?.branchId}
                 />
             </div>
         </main>
