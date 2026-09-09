@@ -21,9 +21,9 @@ class OrderController extends Controller
 
     public function store(
         StoreOrderRequest $request,
-        Restaurant $restaurant,
         Branch $branch
     ): JsonResponse {
+        $restaurant = Restaurant::where("id" , $branch->restaurant_id);
         $order = $this->orderService->create(
             $request->validated(),
             $restaurant,

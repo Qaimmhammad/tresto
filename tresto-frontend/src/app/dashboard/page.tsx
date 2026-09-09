@@ -9,13 +9,18 @@ import {
   ShoppingBag,
 } from "lucide-react";
 
+import UrlComponent from "../components/search-params-component";
+
+
 import { RestaurantTableIcon } from "@/components/icons/hugeicons-restaurant-table";
 import getSummary from "@/api/dashboard/get-summary";
 
 const PRIMARY_COLOR = "#B42318";
 
-export default async function DashboardPage() {
+export default async function DashboardPage(
+) {
   const summary = await getSummary();
+
 
   const statCards = [
     {
@@ -56,14 +61,13 @@ export default async function DashboardPage() {
           مرحباً بعودتك 👋
         </h1>
 
-        <p className="text-sm font-medium text-gray-600">
+        <UrlComponent/>
+
+
+        <p className="text-xl font-semibold text-gray-600">
           إليك نظرة سريعة على أداء مطعمك.
         </p>
 
-        <div className="flex items-center justify-end gap-1.5 pt-1 text-xs font-medium text-gray-500">
-          <Calendar className="h-4 w-4" />
-          <span>12 أكتوبر 2024</span>
-        </div>
       </section>
 
       {/* Statistics */}

@@ -1,5 +1,5 @@
-import PublicMenuClient from "./public-menu-client";
 import getRestaurantBySlug from "@/api/restaurant/get-restaurant-by-slug";
+import PublicMenuClient from "./public-menu-client";
 
 type Props = {
     params: Promise<{
@@ -12,9 +12,7 @@ export default async function RestaurantPage({
 }: Props) {
     const { restaurantSlug } = await params;
 
-    const data = await getRestaurantBySlug(
-        restaurantSlug
-    ); 
+    const data = await getRestaurantBySlug(restaurantSlug);
 
     return (
         <PublicMenuClient data={data} slug={restaurantSlug} />

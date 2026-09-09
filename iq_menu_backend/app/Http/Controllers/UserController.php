@@ -8,6 +8,7 @@ use App\Models\Branch;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Restaurant ;
 
 class UserController extends Controller
 {
@@ -141,6 +142,16 @@ class UserController extends Controller
             'message' => 'Employee created successfully.',
             'user' => $user,
         ], 201);
+    }
+
+    public function currentUser(Request $request) 
+    {
+        $user = $request->user();
+        $restaurant_slug = Restaurant::where("id" , $user->restaurant_id)->get("slug") ; 
+        return response()->json([
+            "user" => $user ,
+            "slug" => $restaurant_slug
+        ]);
     }
 
     public function update(

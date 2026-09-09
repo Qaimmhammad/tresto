@@ -20,6 +20,9 @@ Route::get("/restaurant/public-data" , [RestaurantController::class , "getPublic
 Route::post('/login', [UserController::class, 'login'])
     ->name('login');
 
+Route::post('/restaurant/orders/${branchId}' , [OrderController::class, 'store']);
+
+
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get("/dashboard/tables" , [TableController::class, "index"]);
@@ -29,9 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('tables/bulk' , [TableController::class, "setCount"]);
 
-    Route::get('/user', function (Request $request) {
-        return $request->user();
-    })->name('user');
+    Route::get('/user', [UserController::class, "currentUser"])->name('user');
 
     Route::post("/users" , [UserController::class , 'store']);
 

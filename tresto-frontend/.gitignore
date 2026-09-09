@@ -20,6 +20,8 @@
 # production
 /build
 
+/src/app/api/images
+
 # misc
 .DS_Store
 *.pem

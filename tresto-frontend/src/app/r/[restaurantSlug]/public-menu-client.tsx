@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useOrderStore } from "@/app/stores/use-order-store";
+import { OrderItemPayload } from "@/app/stores/use-order-store";
 
-import { getCategoriesAction } from "../dashboard/meals/categories-actions";
-import { getMealsAction } from "../dashboard/meals/actions";
+import { getCategoriesAction } from "../../dashboard/meals/categories-actions";
+import { getMealsAction } from "../../dashboard/meals/actions";
 import getDataAction from "./get-data-action";
 
 import {
@@ -14,6 +16,7 @@ import {
     X,
     Flame,
 } from "lucide-react";
+import Link from "next/link";
 
 type Restaurant = {
     id: string;
@@ -121,6 +124,7 @@ export default function PublicMenuClient({
     data,
     slug
 }: Props) {
+
     const {
         restaurant,
         restaurant_settings: settings,
@@ -261,6 +265,11 @@ export default function PublicMenuClient({
     );
 
     function addToCart(meal: Meal) {
+
+        store.addItem({
+            mealId: meal.id,
+            quantity: 1
+        });
         setCart((current) => {
             const existing = current.find(
                 (item) => item.meal.id === meal.id
@@ -287,6 +296,8 @@ export default function PublicMenuClient({
             ];
         });
     }
+
+    const store = useOrderStore();
 
     function decreaseFromCart(mealId: string) {
         setCart((current) => {
@@ -682,6 +693,7 @@ export default function PublicMenuClient({
                                                                     addToCart(
                                                                         meal
                                                                     )
+                                                                    
                                                                 }
                                                                 className="flex h-11 w-11 items-center justify-center rounded-full text-white shadow-sm transition active:scale-95"
                                                                 style={{
@@ -705,6 +717,7 @@ export default function PublicMenuClient({
                                                                         addToCart(
                                                                             meal
                                                                         )
+                                                                        
                                                                     }
                                                                     className="flex h-8 w-8 items-center justify-center rounded-full text-white"
                                                                     style={{
@@ -765,6 +778,7 @@ export default function PublicMenuClient({
                                     primaryColor,
                             }}
                         >
+
                             <div className="flex items-center gap-2">
                                 <ShoppingCart className="h-5 w-5" />
 
@@ -930,18 +944,18 @@ export default function PublicMenuClient({
                                         )}
                                     </span>
                                 </div>
-
-                                <button
-                                    type="button"
-                                    className="mt-5 w-full rounded-full py-3.5 text-sm font-bold shadow-md"
+                                <Link
+                                    href={`/r/${slug}/checkout`}
+                                    className="flex items-center justify-center w-full mt-5 rounded-2xl py-3.5 text-lg font-bold shadow-md"
                                     style={{
                                         backgroundColor:
                                             primaryColor,
                                         color: primaryTextColor,
                                     }}
+                                   
                                 >
                                     متابعة الطلب
-                                </button>
+                                </Link>
                             </div>
                         </div>
                     </div>

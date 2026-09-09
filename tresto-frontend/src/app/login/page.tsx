@@ -45,16 +45,17 @@ export default function LoginPage() {
             if (!user) {
                 throw new Error("login Failed")
             }
-            const role = user.role ; 
+            const role = user.user.role;
+            const restaurantSlug = user.slug?.[0]?.slug; 
             if (role === "admin") {
-                router.push("dashboard");
-            }else if (role === "employee"){
+                router.push(`/dashboard?slug=${restaurantSlug}`);
+            } else if (role === "employee") {
                 router.push("employee-dashboard");
-            }else if (role === "branch_manager" ) {
+            } else if (role === "branch_manager") {
                 router.push("manager-dashboard");
             }
 
-            
+
         } catch (error) {
             setError(
                 error instanceof Error

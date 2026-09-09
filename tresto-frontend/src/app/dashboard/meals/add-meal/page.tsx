@@ -16,7 +16,6 @@ import type Category from "@/models/category-model";
 import { createMealAction, uploadMealImageAction } from "../actions";
 import { getCategoriesAction } from "../categories-actions";
 
-
 import { uploadMealImage } from "@/helpers/upload-image";
 
 type MealOption = {
@@ -116,9 +115,9 @@ export default function AddMealPage() {
             currentOptions.map((option, optionIndex) =>
                 optionIndex === index
                     ? {
-                        ...option,
-                        [field]: value,
-                    }
+                          ...option,
+                          [field]: value,
+                      }
                     : option,
             ),
         );
@@ -156,11 +155,6 @@ export default function AddMealPage() {
             return;
         }
 
-        if (!description.trim()) {
-            setError("وصف الوجبة مطلوب.");
-            return;
-        }
-
         if (!categoryId) {
             setError("يرجى اختيار فئة للوجبة.");
             return;
@@ -184,15 +178,15 @@ export default function AddMealPage() {
             const formattedOptions =
                 validOptions.length > 0
                     ? validOptions.map((option) => ({
-                        name: option.key.trim(),
-                        price: option.value.trim(),
-                    }))
+                          name: option.key.trim(),
+                          price: option.value.trim(),
+                      }))
                     : null;
 
             await createMealAction({
                 name: name.trim(),
                 price: parsedPrice,
-                description: description.trim(),
+                description: description.trim() ,
                 imageUrl: imageUrl,
                 categoryId: categoryId,
                 options: formattedOptions,
@@ -342,8 +336,8 @@ export default function AddMealPage() {
                             </div>
 
                             <div>
-                                <label className="mb-2 block text-sm font-medium">
-                                    الوصف
+                                <label className="mb-2 block text-lg font-medium">
+                                    الوصف <span className="text-xs text-black font-semibold">اختياري</span>
                                 </label>
 
                                 <textarea
@@ -394,11 +388,11 @@ export default function AddMealPage() {
                         <div className="mb-5 flex items-start justify-between gap-4">
                             <div>
                                 <h2 className="font-semibold">
-                                    خيارات الوجبة
+                                    خيارات الوجبة <span className="text-xs text-muted-foreground font-normal">(اختياري)</span>
                                 </h2>
 
                                 <p className="mt-1 text-sm text-muted-foreground">
-                                    اختيارية، مثل الحجم أو نوع الإضافة.
+                                    مثل الحجم أو نوع الإضافة.
                                 </p>
                             </div>
 

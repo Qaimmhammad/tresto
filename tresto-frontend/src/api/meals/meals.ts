@@ -37,7 +37,7 @@ export async function createMeal(data: CreateMealPayload): Promise<MealModel> {
       description: data.description,
       price: data.price,
       is_available: data.isAvailable,
-      image: data.imageUrl,
+      image_url: data.imageUrl,
       options: data.options
     }),
   })

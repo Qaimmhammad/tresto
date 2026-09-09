@@ -3,41 +3,47 @@ import OrderModel from "@/models/order-model";
 import { MealOption } from "@/models/meal-model";
 
 export type OrderItemPayload = {
-  mealId: string,
-  quantity: number,
-  selectedOptions?: MealOption[]
-}
+  mealId: string;
+  quantity: number;
+  selectedOptions?: MealOption[];
+};
 
 export type CreateOrderPayload = {
-  items: OrderItemPayload[]
-  notes?: string
-  totalAmount?: number
-}
+  customerName: string;
+  customerPhoneNumber?: string;
+  address?: string;
+  orderType: "takeaway" | "delivery";
+  description?: string;
+  totalPrice: number;
+  items: OrderItemPayload[];
+};
 
 export type CreateDineInOrderPayload = {
-  items: OrderItemPayload[]
-  notes?: string
-}
+  customerName: string;
+  description?: string;
+  items: OrderItemPayload[];
+};
 
 export async function createOrder(
   branchId: string | number,
   data: CreateOrderPayload
 ) {
-  return serverFetch(
-    `/restaurant/orders/${branchId}`,
-    {
-      method: "POST",
-      body: JSON.stringify({
-        items: data.items.map((item) => ({
-          meal_id: item.mealId,
-          quantity: item.quantity,
-          selectedOptions: item.selectedOptions
-        })),
-        notes: data.notes,
-        total_amount: data.totalAmount,
-      }),
-    }
-  )
+  return serverFetch(`/restaurant/orders/${branchId}`, {
+    method: "POST",
+    body: JSON.stringify({
+      customer_name: data.customerName,
+      customer_phone_number: data.customerPhoneNumber || null,
+      address: data.address || null,
+      order_type: data.orderType,
+      description: data.description || null,
+      total_price: data.totalPrice,
+      items: data.items.map((item) => ({
+        meal_id: item.mealId,
+        quantity: item.quantity,
+        selected_options: item.selectedOptions || [],
+      })),
+    }),
+  });
 }
 
 export async function createDineInOrder(
@@ -47,24 +53,20 @@ export async function createDineInOrder(
   return serverFetch(`/t/${tableId}/orders`, {
     method: "POST",
     body: JSON.stringify({
+      customer_name: data.customerName,
+      description: data.description || null,
+      order_type: "dine_in",
       items: data.items.map((item) => ({
         meal_id: item.mealId,
         quantity: item.quantity,
-        selectedOptions: item.selectedOptions
+        selected_options: item.selectedOptions || [],
       })),
-      notes: data.notes,
     }),
-  })
+  });
 }
 
 export async function getOrders(period: string | null) {
-  if (period) { 
-    const response: any = await serverFetch(`/orders/get?period=${period}`);
-    return response.data ;
-  }
-  else {
-    const response: any = await serverFetch(`/orders/get`);
-    return response.data
-  }
-
+  const endpoint = period ? `/orders/get?period=${period}` : `/orders/get`;
+  const response: any = await serverFetch(endpoint);
+  return response?.data ?? [];
 }
