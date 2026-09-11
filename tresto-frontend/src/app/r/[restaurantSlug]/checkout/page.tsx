@@ -1,27 +1,42 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, ShoppingBag, Truck, Loader2, MapPin, Phone, User, Clock } from "lucide-react";
 import Link from "next/link";
-import { createOrderAction, type OrderItemPayload, type CreateOrderPayload } from "./action";
+import { createOrderAction, type OrderItemPayload, type CreateOrderPayload, getBranchesAction } from "./action";
 import { useOrderStore } from "@/app/stores/use-order-store";
+import Branch from "@/models/branch-model";
+import { useSearchParams } from "next/navigation";
 
-type Props = {
-    branches?: { id: string | number; name: string }[];
-};
 
-export default function CheckoutPage({ 
-    branches = [{ id: "1", name: "الفرع الرئيسي" }] 
-}: Props) {
+
+export default function CheckoutPage() {
+    const [branches, setBranches] = useState<Branch[]>();
+
+    const pathParams = useSearchParams()
+    const slug = pathParams.get("slug") || " "; 
+
+    console.log(`slug is : ${slug}`);
+
+    useEffect(() => {
+        async function getBranches(restaurantSlug: string) {
+            const branches = await getBranchesAction(restaurantSlug);
+            setBranches(branches);
+            if (branches && branches.length > 0) {
+            setSelectedBranchId(branches[0].id);
+        }
+        }
+        getBranches(slug);
+    }, [slug])
     const cartItems = useOrderStore((state) => state.cart);
     const totalAmount = useOrderStore((state) => state.getCartTotal());
     const clearCart = useOrderStore((state) => state.clearCart);
-    const [selectedBranchId, setSelectedBranchId] = useState<string | number>(branches[0]?.id || "");
-    const [orderType, setOrderType] = useState<"takeaway" | "delivery">("takeaway");
-    
+    const [selectedBranchId, setSelectedBranchId] = useState<string | number >("");
+    const [orderType, setOrderType] = useState<"pickup" | "delivery">("pickup");
+
     // Base required fields
     const [customerName, setCustomerName] = useState<string>("");
-    
+
     // Delivery fields
     const [phone, setPhone] = useState<string>("");
     const [address, setAddress] = useState<string>("");
@@ -32,6 +47,8 @@ export default function CheckoutPage({
     const [notes, setNotes] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
+
+    
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -62,7 +79,7 @@ export default function CheckoutPage({
         }));
 
         // تجهيز الوصف بدمج وقت الوصول إن وجد مع الملاحظات
-        const extraDescription = orderType === "takeaway" 
+        const extraDescription = orderType === "pickup"
             ? `[وقت الوصول المتوقع: خلال ${arrivalTime} دقيقة] ${notes}`.trim()
             : notes;
 
@@ -104,10 +121,9 @@ export default function CheckoutPage({
                     <div className="grid grid-cols-2 gap-3">
                         <button
                             type="button"
-                            onClick={() => setOrderType("takeaway")}
-                            className={`p-3.5 rounded-xl border flex flex-col items-center gap-1.5 text-xs font-bold transition-all ${
-                                orderType === "takeaway" ? "border-primary bg-primary/10 text-primary ring-2 ring-primary/20" : "bg-card hover:bg-accent"
-                            }`}
+                            onClick={() => setOrderType("pickup")}
+                            className={`p-3.5 rounded-xl border flex flex-col items-center gap-1.5 text-xs font-bold transition-all ${orderType === "pickup" ? "border-primary bg-primary/10 text-primary ring-2 ring-primary/20" : "bg-card hover:bg-accent"
+                                }`}
                         >
                             <ShoppingBag className="w-5 h-5" />
                             استلام من الفرع (طلب مسبق)
@@ -116,9 +132,8 @@ export default function CheckoutPage({
                         <button
                             type="button"
                             onClick={() => setOrderType("delivery")}
-                            className={`p-3.5 rounded-xl border flex flex-col items-center gap-1.5 text-xs font-bold transition-all ${
-                                orderType === "delivery" ? "border-primary bg-primary/10 text-primary ring-2 ring-primary/20" : "bg-card hover:bg-accent"
-                            }`}
+                            className={`p-3.5 rounded-xl border flex flex-col items-center gap-1.5 text-xs font-bold transition-all ${orderType === "delivery" ? "border-primary bg-primary/10 text-primary ring-2 ring-primary/20" : "bg-card hover:bg-accent"
+                                }`}
                         >
                             <Truck className="w-5 h-5" />
                             توصيل للعنوان
@@ -149,7 +164,7 @@ export default function CheckoutPage({
                         onChange={(e) => setSelectedBranchId(e.target.value)}
                         className="w-full p-3 bg-muted/40 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                     >
-                        {branches.map((b) => (
+                        {branches?.map((b) => (
                             <option key={b.id} value={b.id}>
                                 {b.name}
                             </option>

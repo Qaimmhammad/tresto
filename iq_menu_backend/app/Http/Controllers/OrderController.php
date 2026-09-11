@@ -23,7 +23,7 @@ class OrderController extends Controller
         StoreOrderRequest $request,
         Branch $branch
     ): JsonResponse {
-        $restaurant = Restaurant::where("id" , $branch->restaurant_id);
+        $restaurant = Restaurant::where("id" , $branch->restaurant_id)->firstOrFail();
         $order = $this->orderService->create(
             $request->validated(),
             $restaurant,

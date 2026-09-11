@@ -2,9 +2,9 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import OrderModel from "@/models/order-model";
 import { MealOption } from "@/models/meal-model";
-import { 
-  OrderItemPayload as ApiOrderItemPayload, 
-  CreateOrderPayload, 
+import {
+  OrderItemPayload as ApiOrderItemPayload,
+  CreateOrderPayload,
   CreateDineInOrderPayload
 } from "@/api/orders/orders";
 import { createOrderAction, createDineInOrderAction, getOrdersAction } from "./create-order-action";
@@ -20,7 +20,7 @@ export type { CreateOrderPayload, CreateDineInOrderPayload };
 export interface OrderState {
   // Cart State
   cart: OrderItemPayload[];
-  
+
   // API State
   orders: OrderModel[];
   isLoading: boolean;
@@ -59,7 +59,16 @@ export const useOrderStore = create<OrderState>()(
 
           if (existingIndex > -1) {
             const updatedCart = [...state.cart];
-            updatedCart[existingIndex].quantity += newItem.quantity;
+            const existingItem = updatedCart[existingIndex];
+
+            updatedCart[existingIndex] = {
+              ...existingItem,
+              quantity: existingItem.quantity + newItem.quantity,
+              // تحديث السعر والاسم إذا تم تمريرهما مجدداً
+              price: newItem.price ?? existingItem.price,
+              name: newItem.name ?? existingItem.name,
+            };
+
             return { cart: updatedCart };
           }
 

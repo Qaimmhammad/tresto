@@ -10,7 +10,8 @@ type Order = {
     customerPhoneNumber: string | null,
     description: string | null,
     orderType: "delivery" | "pick_up" | "dine_in",
-    status: "in_progress" | "completed" | "in_kitchen"
+    status: "in_progress" | "completed" | "in_kitchen",
+    orderNumber: number 
 }
 
 export default Order ; 

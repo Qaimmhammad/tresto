@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string("customer_phone_number")->nullable();
             $table->text("description")->nullable();
             $table->string("order_type");
+            $table->integer("order_number")->autoIncrement();
+            $table->unique(["restaurant_id" , "order_number"]);
             $table->string("status");
             $table->unsignedBigInteger("total_price");
             $table->timestamps();

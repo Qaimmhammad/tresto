@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Order extends Model
 {
@@ -40,5 +41,21 @@ class Order extends Model
     public function table(): BelongsTo 
     {
         return $this->belongsTo(Table::class);
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (Order $order) {
+            if (! $order->order_number) {
+                $order->order_number = DB::transaction(function () use ($order) {
+                    $maxOrderNumber = DB::table('orders')
+                        ->where('restaurant_id', $order->restaurant_id)
+                        ->lockForUpdate()
+                        ->max('order_number');
+
+                    return ($maxOrderNumber ?? 0) + 1;
+                });
+            }
+        });
     }
 }

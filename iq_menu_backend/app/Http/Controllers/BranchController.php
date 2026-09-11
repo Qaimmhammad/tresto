@@ -8,24 +8,31 @@ use App\Models\Branch;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request ;
+use App\Models\Restaurant;
 
 class BranchController extends Controller
 {
     use AuthorizesRequests ; 
-    public function index(Request $request): JsonResponse
+    public function index(String $slug): JsonResponse
     {
-        $user = $request->user() ;
-
-        $this->authorize('viewAny', Branch::class);
-
+        $restaurant = Restaurant::where(
+            "slug",
+            $slug
+        )->firstOrFail();
         $branches = Branch::where(
-            'restaurant_id',
-            $user->restaurant_id
+            "restaurant_id",
+            $restaurant->id
         )->get();
+        return response()->json(
+            $branches
+        );
+    }
 
-        return response()->json([
-            'data' => $branches,
-        ]);
+    public function authorizedBranch(Request $request)
+    {
+        $user = $request->user() ; 
+        $branches = Branch::where("restaurant_id" , $user->restaurant_id)->get();
+        return response()->json($branches);
     }
 
     public function store(StoreBranchRequest $request): JsonResponse

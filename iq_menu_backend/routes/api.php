@@ -8,37 +8,32 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-
-
-
-Route::get("/restaurant/slug" , [RestaurantController::class, "getRestaurantBySlug"]);
-Route::get("/restaurant/public-data" , [RestaurantController::class , "getPublicData"]);
+Route::get('/restaurant/slug', [RestaurantController::class, 'getRestaurantBySlug']);
+Route::get('/restaurant/public-data', [RestaurantController::class, 'getPublicData']);
 
 Route::post('/login', [UserController::class, 'login'])
     ->name('login');
 
-Route::post('/restaurant/orders/${branchId}' , [OrderController::class, 'store']);
-
+Route::post('/restaurant/orders/${branchId}', [OrderController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::get("/dashboard/tables" , [TableController::class, "index"]);
+    Route::get('/dashboard/tables', [TableController::class, 'index']);
 
     Route::post('/logout', [UserController::class, 'logout'])
         ->name('logout');
 
-    Route::post('tables/bulk' , [TableController::class, "setCount"]);
+    Route::post('tables/bulk', [TableController::class, 'setCount']);
 
-    Route::get('/user', [UserController::class, "currentUser"])->name('user');
+    Route::get('/user', [UserController::class, 'currentUser'])->name('user');
 
-    Route::post("/users" , [UserController::class , 'store']);
+    Route::post('/users', [UserController::class, 'store']);
 
     Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
 
-    Route::get("/orders/get", [OrderController::class , 'getOrders']);
+    Route::get('/orders/get', [OrderController::class, 'getOrders']);
 
     Route::get('/users/all', [UserController::class, 'index']);
 
@@ -113,20 +108,22 @@ Route::middleware([
 });
 
 Route::get(
+    '/branches/{restaurantSlug}',
+    [BranchController::class, 'index']
+)->name('branches.index');
+
+Route::get(
     '/restaurant/{restaurant}/meals',
     [MealController::class, 'index']
 )->name('meals.index');
 
 Route::middleware('auth:sanctum')->group(function () {
 
-    Route::get(
-        '/branches',
-        [BranchController::class, 'index']
-    )->name('branches.index');
+    Route::get('/branches', [BranchController::class, 'authorizedBranch']);
 
     Route::get(
         '/meals/all',
-        [MealController::class , "index"]
+        [MealController::class, 'index']
     );
 
     Route::post(
@@ -174,6 +171,6 @@ Route::post(
 )->name('orders.dine-in');
 
 Route::post(
-    'branche/orders/{branchId}',
+    'branches/orders/{branch}',
     [OrderController::class, 'store']
 )->name('orders.store');

@@ -17,7 +17,7 @@ export type CreateMealPayload = {
 export type UpdateMealPayload = {
   categoryId?: string
   name?: string
-  description?: string
+  description?: string | null
   price?: number
   isAvailable?: boolean
   image?: string | null
@@ -51,7 +51,7 @@ export async function updateMeal(
   mealId: string,
   data: UpdateMealPayload
 ): Promise<MealModel> {
-  return serverFetch<MealModel>(`/api/meals/${mealId}`, {
+  return serverFetch<MealModel>(`/meals/${mealId}`, {
     method: "PUT",
     body: JSON.stringify({
       category_id: data.categoryId,

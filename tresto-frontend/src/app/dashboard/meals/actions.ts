@@ -1,6 +1,7 @@
 "use server";
-import { CreateMealPayload, getRestaurantMeals } from "@/api/meals/meals";
+import { CreateMealPayload, getRestaurantMeals, updateMeal } from "@/api/meals/meals";
 import { createMeal } from "@/api/meals/meals";
+import serverFetch from "@/api/server-client";
 import { uploadMealImage } from "@/helpers/upload-image";
 import Meal from "@/models/meal-model";
 
@@ -28,4 +29,15 @@ export async function uploadMealImageAction(
     image: File
 ): Promise<string> {
     return uploadMealImage(image);
+}
+
+export async function deleteMealAction(mealId: string | number) {
+    return await serverFetch(`/meals/${mealId}`, {
+        method: "DELETE"
+    });
+}
+
+
+export async function updateMealAction(meal: Meal) {
+    return await updateMeal(meal.id, meal)
 }

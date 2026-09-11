@@ -2,11 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useOrderStore } from "@/app/stores/use-order-store";
-import { OrderItemPayload } from "@/app/stores/use-order-store";
 
 import { getCategoriesAction } from "../../dashboard/meals/categories-actions";
 import { getMealsAction } from "../../dashboard/meals/actions";
-import getDataAction from "./get-data-action";
+import {getDataAction} from "./get-data-action";
 
 import {
     Search,
@@ -61,19 +60,10 @@ type Meal = {
     is_popular?: boolean;
 };
 
-type CartItem = {
-    meal: Meal;
-    quantity: number;
-};
-
 type Props = {
-    data: any;
-    slug: string
+    data: RestaurantResponse;
+    slug: string;
 };
-
-/* =========================================================
-   Helpers
-========================================================= */
 
 function formatPrice(price: number) {
     return `${price.toLocaleString("ar-IQ")} د.ع`;
@@ -116,15 +106,10 @@ function getContrastTextColor(hex: string) {
         : "#111827";
 }
 
-/* =========================================================
-   Component
-========================================================= */
-
 export default function PublicMenuClient({
     data,
-    slug
+    slug,
 }: Props) {
-
     const {
         restaurant,
         restaurant_settings: settings,
@@ -147,14 +132,9 @@ export default function PublicMenuClient({
     const restaurantSubtitle =
         settings.subtitle;
 
-    /* =====================================================
-       Data
-    ===================================================== */
-
     const [meals, setMeals] = useState<Meal[]>([]);
-    const [categories, setCategories] = useState<Category[]>(
-        []
-    );
+    const [categories, setCategories] =
+        useState<Category[]>([]);
 
     const [loadingMeals, setLoadingMeals] =
         useState(true);
@@ -162,33 +142,56 @@ export default function PublicMenuClient({
     const [loadingCategories, setLoadingCategories] =
         useState(true);
 
+    const [selectedCategory, setSelectedCategory] =
+        useState("all");
+
+    const [search, setSearch] = useState("");
+
+    const [cartOpen, setCartOpen] =
+        useState(false);
+
+    const cart = useOrderStore(
+        (state) => state.cart
+    );
+
+    const addItem = useOrderStore(
+        (state) => state.addItem
+    );
+
+    const removeItem = useOrderStore(
+        (state) => state.removeItem
+    );
+
+    const updateQuantity = useOrderStore(
+        (state) => state.updateQuantity
+    );
+
+    const getCartTotal = useOrderStore(
+        (state) => state.getCartTotal
+    );
+
     useEffect(() => {
         async function getData() {
             try {
-                const { meals, categories } =
-                    await getDataAction(slug);
-
-                /*
-                 * Supports both:
-                 *
-                 * Meal[]
-                 *
-                 * and:
-                 *
-                 * { data: Meal[] }
-                 */
+                const {
+                    meals,
+                    categories,
+                } = await getDataAction(slug);
 
                 const mealsData: any = meals;
                 const categoriesData: any = categories;
 
                 setMeals(
-                    Array.isArray(mealsData) ? mealsData : mealsData?.data ?? []
+                    Array.isArray(mealsData)
+                        ? mealsData
+                        : mealsData?.data ?? []
                 );
 
                 setCategories(
-                    Array.isArray(categoriesData) ? categoriesData : categoriesData?.data ?? []
+                    Array.isArray(categoriesData)
+                        ? categoriesData
+                        : categoriesData?.data ?? []
                 );
-                
             } catch (error) {
                 console.error(
                     "Failed to load menu data:",
@@ -206,27 +209,9 @@ export default function PublicMenuClient({
         getData();
     }, [slug]);
 
-    /* =====================================================
-       Filters
-    ===================================================== */
-
-    const [selectedCategory, setSelectedCategory] =
-        useState("all");
-
-    const [search, setSearch] = useState("");
-
-    const [cart, setCart] = useState<CartItem[]>([]);
-
-    const [cartOpen, setCartOpen] = useState(false);
-
-    /* =====================================================
-       Filter Meals
-    ===================================================== */
-
     const filteredMeals = useMemo(() => {
-        const normalizedSearch = search
-            .trim()
-            .toLowerCase();
+        const normalizedSearch =
+            search.trim().toLowerCase();
 
         return meals.filter((meal) => {
             const matchesCategory =
@@ -245,99 +230,65 @@ export default function PublicMenuClient({
                     ?.toLowerCase()
                     .includes(normalizedSearch);
 
-            return matchesCategory && matchesSearch;
+            return (
+                matchesCategory &&
+                matchesSearch
+            );
         });
-    }, [meals, selectedCategory, search]);
-
-    /* =====================================================
-       Cart
-    ===================================================== */
+    }, [
+        meals,
+        selectedCategory,
+        search,
+    ]);
 
     const cartCount = cart.reduce(
-        (total, item) => total + item.quantity,
+        (total, item) =>
+            total + item.quantity,
         0
     );
 
-    const cartTotal = cart.reduce(
-        (total, item) =>
-            total + item.meal.price * item.quantity,
-        0
-    );
+    const cartTotal = getCartTotal();
 
     function addToCart(meal: Meal) {
-
-        store.addItem({
+        addItem({
             mealId: meal.id,
-            quantity: 1
-        });
-        setCart((current) => {
-            const existing = current.find(
-                (item) => item.meal.id === meal.id
-            );
-
-            if (existing) {
-                return current.map((item) =>
-                    item.meal.id === meal.id
-                        ? {
-                            ...item,
-                            quantity:
-                                item.quantity + 1,
-                        }
-                        : item
-                );
-            }
-
-            return [
-                ...current,
-                {
-                    meal,
-                    quantity: 1,
-                },
-            ];
+            quantity: 1,
+            name: meal.name,
+            price: meal.price,
         });
     }
-
-    const store = useOrderStore();
 
     function decreaseFromCart(mealId: string) {
-        setCart((current) => {
-            const existing = current.find(
-                (item) => item.meal.id === mealId
-            );
+        const item = cart.find(
+            (item) =>
+                item.mealId === mealId
+        );
 
-            if (!existing) {
-                return current;
-            }
+        if (!item) {
+            return;
+        }
 
-            if (existing.quantity === 1) {
-                return current.filter(
-                    (item) => item.meal.id !== mealId
-                );
-            }
+        if (item.quantity <= 1) {
+            removeItem(mealId);
+            return;
+        }
 
-            return current.map((item) =>
-                item.meal.id === mealId
-                    ? {
-                        ...item,
-                        quantity:
-                            item.quantity - 1,
-                    }
-                    : item
-            );
-        });
-    }
-
-    function getMealQuantity(mealId: string) {
-        return (
-            cart.find(
-                (item) => item.meal.id === mealId
-            )?.quantity ?? 0
+        updateQuantity(
+            mealId,
+            item.quantity - 1
         );
     }
 
-    /* =====================================================
-       Render
-    ===================================================== */
+    function getMealQuantity(
+        mealId: string
+    ) {
+        return (
+            cart.find(
+                (item) =>
+                    item.mealId === mealId
+            )?.quantity ?? 0
+        );
+    }
 
     return (
         <main
@@ -350,8 +301,6 @@ export default function PublicMenuClient({
                 } as React.CSSProperties
             }
         >
-            {/* Header */}
-
             <header
                 className="sticky top-0 z-30 border-b border-gray-200/70 bg-white/95 backdrop-blur"
                 dir="ltr"
@@ -392,12 +341,11 @@ export default function PublicMenuClient({
             </header>
 
             <div className="mx-auto max-w-3xl px-4">
-                {/* Hero */}
-
                 <section
                     className="overflow-hidden rounded-b-[2rem] px-6 py-10 text-center shadow-sm"
                     style={{
-                        backgroundColor: primaryColor,
+                        backgroundColor:
+                            primaryColor,
                     }}
                 >
                     <div className="mx-auto flex max-w-xl flex-col items-center">
@@ -414,7 +362,8 @@ export default function PublicMenuClient({
                         <h2
                             className="text-3xl font-extrabold tracking-tight"
                             style={{
-                                color: primaryTextColor,
+                                color:
+                                    primaryTextColor,
                             }}
                         >
                             {restaurantTitle}
@@ -424,7 +373,8 @@ export default function PublicMenuClient({
                             <p
                                 className="mt-2 text-sm font-medium"
                                 style={{
-                                    color: primaryTextColor,
+                                    color:
+                                        primaryTextColor,
                                     opacity: 0.85,
                                 }}
                             >
@@ -433,8 +383,6 @@ export default function PublicMenuClient({
                         )}
                     </div>
                 </section>
-
-                {/* Search */}
 
                 <section className="mt-7">
                     <div className="relative">
@@ -459,35 +407,35 @@ export default function PublicMenuClient({
                     </div>
                 </section>
 
-                {/* Categories */}
-
                 <section className="mt-4">
                     <div className="flex gap-3 overflow-x-auto pb-2">
-                        {/* All */}
-
                         <button
                             type="button"
                             onClick={() =>
-                                setSelectedCategory("all")
+                                setSelectedCategory(
+                                    "all"
+                                )
                             }
                             className="shrink-0 rounded-full border px-5 py-2.5 text-sm font-semibold transition"
                             style={
                                 selectedCategory ===
-                                    "all"
+                                "all"
                                     ? {
-                                        backgroundColor:
-                                            primaryColor,
-                                        borderColor:
-                                            primaryColor,
-                                        color: primaryTextColor,
-                                    }
+                                          backgroundColor:
+                                              primaryColor,
+                                          borderColor:
+                                              primaryColor,
+                                          color:
+                                              primaryTextColor,
+                                      }
                                     : {
-                                        backgroundColor:
-                                            "#FFFFFF",
-                                        borderColor:
-                                            `${primaryColor}35`,
-                                        color: "#4B5563",
-                                    }
+                                          backgroundColor:
+                                              "#FFFFFF",
+                                          borderColor:
+                                              `${primaryColor}35`,
+                                          color:
+                                              "#4B5563",
+                                      }
                             }
                         >
                             الكل
@@ -515,19 +463,21 @@ export default function PublicMenuClient({
                                             style={
                                                 active
                                                     ? {
-                                                        backgroundColor:
-                                                            primaryColor,
-                                                        borderColor:
-                                                            primaryColor,
-                                                        color: primaryTextColor,
-                                                    }
+                                                          backgroundColor:
+                                                              primaryColor,
+                                                          borderColor:
+                                                              primaryColor,
+                                                          color:
+                                                              primaryTextColor,
+                                                      }
                                                     : {
-                                                        backgroundColor:
-                                                            "#FFFFFF",
-                                                        borderColor:
-                                                            `${primaryColor}35`,
-                                                        color: "#4B5563",
-                                                    }
+                                                          backgroundColor:
+                                                              "#FFFFFF",
+                                                          borderColor:
+                                                              `${primaryColor}35`,
+                                                          color:
+                                                              "#4B5563",
+                                                      }
                                             }
                                         >
                                             {
@@ -539,8 +489,6 @@ export default function PublicMenuClient({
                             )}
                     </div>
                 </section>
-
-                {/* Meals */}
 
                 <section className="mt-7">
                     <div className="mb-4 flex items-end justify-between">
@@ -556,21 +504,27 @@ export default function PublicMenuClient({
 
                         {!loadingMeals && (
                             <span className="text-xs font-semibold text-gray-400">
-                                {filteredMeals.length} وجبة
+                                {
+                                    filteredMeals.length
+                                }{" "}
+                                وجبة
                             </span>
                         )}
                     </div>
 
                     {loadingMeals ? (
                         <div className="space-y-5">
-                            {[1, 2, 3].map((item) => (
-                                <div
-                                    key={item}
-                                    className="h-52 animate-pulse rounded-2xl border border-gray-200 bg-white"
-                                />
-                            ))}
+                            {[1, 2, 3].map(
+                                (item) => (
+                                    <div
+                                        key={item}
+                                        className="h-52 animate-pulse rounded-2xl border border-gray-200 bg-white"
+                                    />
+                                )
+                            )}
                         </div>
-                    ) : filteredMeals.length === 0 ? (
+                    ) : filteredMeals.length ===
+                      0 ? (
                         <div className="rounded-2xl border border-gray-200 bg-white px-6 py-16 text-center">
                             <div
                                 className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
@@ -582,7 +536,8 @@ export default function PublicMenuClient({
                                 <Search
                                     className="h-6 w-6"
                                     style={{
-                                        color: primaryColor,
+                                        color:
+                                            primaryColor,
                                     }}
                                 />
                             </div>
@@ -606,11 +561,11 @@ export default function PublicMenuClient({
 
                                     return (
                                         <article
-                                            key={meal.id}
+                                            key={
+                                                meal.id
+                                            }
                                             className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
                                         >
-                                            {/* Image */}
-
                                             {meal.image_url && (
                                                 <div className="relative aspect-[1.8/1] overflow-hidden bg-gray-100">
                                                     <img
@@ -627,7 +582,8 @@ export default function PublicMenuClient({
                                                         <div
                                                             className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-xs font-bold shadow-sm"
                                                             style={{
-                                                                color: primaryColor,
+                                                                color:
+                                                                    primaryColor,
                                                             }}
                                                         >
                                                             <Flame className="h-3.5 w-3.5" />
@@ -644,8 +600,6 @@ export default function PublicMenuClient({
                                                     )}
                                                 </div>
                                             )}
-
-                                            {/* Content */}
 
                                             <div className="p-4">
                                                 <div className="flex items-start justify-between gap-4">
@@ -668,7 +622,8 @@ export default function PublicMenuClient({
                                                     <span
                                                         className="shrink-0 text-base font-extrabold"
                                                         style={{
-                                                            color: primaryColor,
+                                                            color:
+                                                                primaryColor,
                                                         }}
                                                     >
                                                         {formatPrice(
@@ -686,14 +641,13 @@ export default function PublicMenuClient({
 
                                                     {meal.is_available &&
                                                         (quantity ===
-                                                            0 ? (
+                                                        0 ? (
                                                             <button
                                                                 type="button"
                                                                 onClick={() =>
                                                                     addToCart(
                                                                         meal
                                                                     )
-                                                                    
                                                                 }
                                                                 className="flex h-11 w-11 items-center justify-center rounded-full text-white shadow-sm transition active:scale-95"
                                                                 style={{
@@ -717,7 +671,6 @@ export default function PublicMenuClient({
                                                                         addToCart(
                                                                             meal
                                                                         )
-                                                                        
                                                                     }
                                                                     className="flex h-8 w-8 items-center justify-center rounded-full text-white"
                                                                     style={{
@@ -762,8 +715,6 @@ export default function PublicMenuClient({
                 </section>
             </div>
 
-            {/* Cart Bar */}
-
             {cartCount > 0 && (
                 <div className="fixed bottom-0 left-0 right-0 z-40 px-4 pb-4">
                     <div className="mx-auto max-w-3xl">
@@ -778,7 +729,6 @@ export default function PublicMenuClient({
                                     primaryColor,
                             }}
                         >
-
                             <div className="flex items-center gap-2">
                                 <ShoppingCart className="h-5 w-5" />
 
@@ -802,8 +752,6 @@ export default function PublicMenuClient({
                     </div>
                 </div>
             )}
-
-            {/* Cart */}
 
             {cartOpen && (
                 <div className="fixed inset-0 z-50">
@@ -843,88 +791,85 @@ export default function PublicMenuClient({
                             </div>
 
                             <div className="mt-6 space-y-3">
-                                {cart.map((item) => (
-                                    <div
-                                        key={
-                                            item.meal.id
-                                        }
-                                        className="flex items-center gap-3 rounded-2xl bg-[#FAFAFA] p-3"
-                                    >
-                                        {item.meal.image_url && (
-                                            <img
-                                                src={
-                                                    item.meal
-                                                        .image_url
-                                                }
-                                                alt={
-                                                    item.meal
-                                                        .name
-                                                }
-                                                className="h-16 w-16 rounded-xl object-cover"
-                                            />
-                                        )}
+                                {cart.map(
+                                    (item) => (
+                                        <div
+                                            key={
+                                                item.mealId
+                                            }
+                                            className="flex items-center gap-3 rounded-2xl bg-[#FAFAFA] p-3"
+                                        >
+                                            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-xs font-bold text-gray-400">
+                                                وجبة
+                                            </div>
 
-                                        <div className="min-w-0 flex-1">
-                                            <h3 className="truncate text-sm font-bold text-gray-950">
-                                                {
-                                                    item.meal
-                                                        .name
-                                                }
-                                            </h3>
+                                            <div className="min-w-0 flex-1">
+                                                <h3 className="truncate text-sm font-bold text-gray-950">
+                                                    {
+                                                        item.name
+                                                    }
+                                                </h3>
 
-                                            <p
-                                                className="mt-1 text-sm font-bold"
-                                                style={{
-                                                    color: primaryColor,
-                                                }}
-                                            >
-                                                {formatPrice(
-                                                    item
-                                                        .meal
-                                                        .price
-                                                )}
-                                            </p>
+                                                <p
+                                                    className="mt-1 text-sm font-bold"
+                                                    style={{
+                                                        color:
+                                                            primaryColor,
+                                                    }}
+                                                >
+                                                    {formatPrice(
+                                                        item.price ??
+                                                            0
+                                                    )}
+                                                </p>
+                                            </div>
+
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        addItem(
+                                                            {
+                                                                mealId:
+                                                                    item.mealId,
+                                                                quantity: 1,
+                                                                name:
+                                                                    item.name,
+                                                                price:
+                                                                    item.price,
+                                                            }
+                                                        )
+                                                    }
+                                                    className="flex h-8 w-8 items-center justify-center rounded-full text-white"
+                                                    style={{
+                                                        backgroundColor:
+                                                            primaryColor,
+                                                    }}
+                                                >
+                                                    <Plus className="h-4 w-4" />
+                                                </button>
+
+                                                <span className="w-5 text-center text-sm font-bold">
+                                                    {
+                                                        item.quantity
+                                                    }
+                                                </span>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() =>
+                                                        decreaseFromCart(
+                                                            item.mealId
+                                                        )
+                                                    }
+                                                    className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 text-gray-600"
+                                                >
+                                                    <Minus className="h-4 w-4" />
+                                                </button>
+                                            </div>
                                         </div>
-
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    addToCart(
-                                                        item.meal
-                                                    )
-                                                }
-                                                className="flex h-8 w-8 items-center justify-center rounded-full text-white"
-                                                style={{
-                                                    backgroundColor:
-                                                        primaryColor,
-                                                }}
-                                            >
-                                                <Plus className="h-4 w-4" />
-                                            </button>
-
-                                            <span className="w-5 text-center text-sm font-bold">
-                                                {
-                                                    item.quantity
-                                                }
-                                            </span>
-
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    decreaseFromCart(
-                                                        item
-                                                            .meal
-                                                            .id
-                                                    )
-                                                }
-                                                className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 text-gray-600"
-                                            >
-                                                <Minus className="h-4 w-4" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
+                                    )
+                                )}
                             </div>
 
                             <div className="mt-6 border-t border-gray-200 pt-5">
@@ -936,7 +881,8 @@ export default function PublicMenuClient({
                                     <span
                                         className="text-xl font-extrabold"
                                         style={{
-                                            color: primaryColor,
+                                            color:
+                                                primaryColor,
                                         }}
                                     >
                                         {formatPrice(
@@ -944,15 +890,21 @@ export default function PublicMenuClient({
                                         )}
                                     </span>
                                 </div>
+
                                 <Link
-                                    href={`/r/${slug}/checkout`}
-                                    className="flex items-center justify-center w-full mt-5 rounded-2xl py-3.5 text-lg font-bold shadow-md"
+                                    href={`/r/${slug}/checkout?slug=${slug}`}
+                                    onClick={() =>
+                                        setCartOpen(
+                                            false
+                                        )
+                                    }
+                                    className="mt-5 flex w-full items-center justify-center rounded-2xl py-3.5 text-lg font-bold shadow-md"
                                     style={{
                                         backgroundColor:
                                             primaryColor,
-                                        color: primaryTextColor,
+                                        color:
+                                            primaryTextColor,
                                     }}
-                                   
                                 >
                                     متابعة الطلب
                                 </Link>

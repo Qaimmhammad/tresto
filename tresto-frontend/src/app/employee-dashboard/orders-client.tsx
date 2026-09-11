@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarDays, Loader2, ShoppingBag } from "lucide-react";
+import { CalendarDays, Clock, Loader2, ShoppingBag, Utensils } from "lucide-react";
 
-import  getOrdersAction  from "./get-orders-action";
+import getOrdersAction from "./get-orders-action";
 
 type OrdersClientProps = {
     initialOrders: any[];
@@ -36,7 +36,6 @@ export default function OrdersClient({
 
     return (
         <section className="space-y-4">
-            {/* Date filter */}
             <div className="flex flex-col gap-3 rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
                 <div>
                     <h2 className="text-lg font-bold text-gray-950">
@@ -64,14 +63,12 @@ export default function OrdersClient({
                 </div>
             </div>
 
-            {/* Error */}
             {error && (
                 <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
                     {error}
                 </div>
             )}
 
-            {/* Loading */}
             {loading ? (
                 <div className="flex min-h-64 items-center justify-center rounded-2xl border border-gray-200/80 bg-white shadow-sm">
                     <div className="flex items-center gap-2 text-sm font-semibold text-gray-500">
@@ -80,7 +77,6 @@ export default function OrdersClient({
                     </div>
                 </div>
             ) : orders.length === 0 ? (
-                /* Zero orders */
                 <div className="flex min-h-72 flex-col items-center justify-center rounded-2xl border border-gray-200/80 bg-white px-6 text-center shadow-sm">
                     <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#B42318]/10">
                         <ShoppingBag className="h-7 w-7 text-[#B42318]" />
@@ -95,26 +91,51 @@ export default function OrdersClient({
                     </p>
                 </div>
             ) : (
-                /* Orders */
                 <div className="space-y-3">
                     {orders.map((order) => (
                         <div
                             key={order.id}
-                            className="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm"
+                            className="group flex flex-col justify-between gap-4 rounded-2xl border border-gray-200/80 bg-white p-4 shadow-sm transition hover:border-gray-300 sm:flex-row sm:items-center"
                         >
-                            <div className="flex items-start justify-between gap-4">
-                                <div>
-                                    <h3 className="text-sm font-bold text-gray-950">
-                                        طلب #{order.id}
-                                    </h3>
-
-                                    <p className="mt-1 text-xs font-medium text-gray-500">
-                                        {order.orderType}
-                                    </p>
+                            <div className="flex items-start gap-3">
+                                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#FAF8F5] text-[#B42318]">
+                                    <Utensils className="h-5 w-5" />
                                 </div>
 
-                                <span className="text-sm font-bold text-gray-950">
-                                    {order.totalPrice?.toLocaleString()} د.ع
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <h3 className="text-base font-bold text-gray-950">
+                                            طلب #{order.order_number ?? order.orderNumber ?? order.id.slice(0, 6)}
+                                        </h3>
+                                        <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200">
+                                            مكتمل
+                                        </span>
+                                    </div>
+
+                                    <div className="flex items-center gap-3 text-xs font-medium text-gray-500">
+                                        <span>{order.orderType || "محلي"}</span>
+                                        <span>•</span>
+                                        <div className="flex items-center gap-1">
+                                            <Clock className="h-3.5 w-3.5" />
+                                            <span>
+                                                {order.createdAt
+                                                    ? new Date(order.createdAt).toLocaleTimeString("ar-IQ", {
+                                                          hour: "2-digit",
+                                                          minute: "2-digit",
+                                                      })
+                                                    : "--:--"}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-between border-t border-gray-100 pt-3 sm:border-0 sm:pt-0 sm:text-left">
+                                <span className="text-xs font-medium text-gray-400 sm:hidden">
+                                    الإجمالي
+                                </span>
+                                <span className="text-base font-extrabold text-[#B42318]">
+                                    {order.totalPrice?.toLocaleString()} <span className="text-xs font-bold text-gray-500">د.ع</span>
                                 </span>
                             </div>
                         </div>

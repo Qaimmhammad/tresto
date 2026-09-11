@@ -19,7 +19,7 @@ class OrderService
         Restaurant $restaurant,
         Branch $branch
     ): Order {
-        return DB::transaction(function () use ($data, $restaurant, $branch) {
+        return DB::transaction(function () use ($data , $restaurant , $branch) {
             if ($branch->restaurant_id !== $restaurant->id) {
                 throw ValidationException::withMessages([
                     'branch' => 'The selected branch does not belong to this restaurant.',

@@ -17,12 +17,12 @@ type BranchesResponse = {
   data: Branch[];
 };
 
-export async function getBranchesAction(): Promise<Branch[]> {
+export async function getBranchesAction() {
   const response = await serverFetch<BranchesResponse>(
-    "/branches",
+    `/branches`,
   );
 
-  return response.data;
+  return response;
 }
 
 export async function createBranchAction(

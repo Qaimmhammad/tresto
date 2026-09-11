@@ -9,10 +9,11 @@ type DataType = {
     meals: Meal[]
 }
 
-export default async function getDataAction(slug: string) {
+export async function getDataAction(slug: string) {
     const restaurantData = await serverFetch<DataType>(
         `/restaurant/public-data?slug=${slug}`
     );
 
     return restaurantData ;
 }
+

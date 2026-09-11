@@ -17,4 +17,5 @@ export default async function RestaurantPage({
     return (
         <PublicMenuClient data={data} slug={restaurantSlug} />
     );
+
 }

@@ -12,7 +12,7 @@ export type CreateOrderPayload = {
   customerName: string;
   customerPhoneNumber?: string;
   address?: string;
-  orderType: "takeaway" | "delivery";
+  orderType: "pickup" | "delivery";
   description?: string;
   totalPrice: number;
   items: OrderItemPayload[];
@@ -28,7 +28,8 @@ export async function createOrder(
   branchId: string | number,
   data: CreateOrderPayload
 ) {
-  return serverFetch(`/restaurant/orders/${branchId}`, {
+  console.log(`the branch id is : ${branchId}`);
+  return serverFetch(`/branches/orders/${branchId}`, {
     method: "POST",
     body: JSON.stringify({
       customer_name: data.customerName,

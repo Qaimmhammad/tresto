@@ -12,8 +12,8 @@ export type UpdateBranchPayload = {
   address?: string;
 };
 
-export async function getBranches(): Promise<Branch[]> {
-  return serverFetch<Branch[]>("/branches");
+export async function getBranches(restaurantSlug: string): Promise<Branch[]> {
+  return serverFetch<Branch[]>(`/branches/${restaurantSlug}`);
 }
 
 export async function createBranch(
