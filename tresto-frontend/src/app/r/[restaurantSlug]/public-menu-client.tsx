@@ -561,20 +561,20 @@ export default function PublicMenuClient({
 
                                     return (
                                         <article
-                                            key={
-                                                meal.id
-                                            }
-                                            className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
+                                            key={meal.id}
+                                            className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
                                         >
+                                            <Link
+                                                href={`/r/${slug}/meal/${meal.id}`}
+                                                className="absolute inset-0 z-0"
+                                                aria-label={`عرض تفاصيل ${meal.name}`}
+                                            />
+
                                             {meal.image_url && (
-                                                <div className="relative aspect-[1.8/1] overflow-hidden bg-gray-100">
+                                                <div className="relative z-10 aspect-[1.8/1] overflow-hidden bg-gray-100 pointer-events-none">
                                                     <img
-                                                        src={
-                                                            meal.image_url
-                                                        }
-                                                        alt={
-                                                            meal.name
-                                                        }
+                                                        src={meal.image_url}
+                                                        alt={meal.name}
                                                         className="h-full w-full object-contain"
                                                     />
 
@@ -582,8 +582,7 @@ export default function PublicMenuClient({
                                                         <div
                                                             className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-xs font-bold shadow-sm"
                                                             style={{
-                                                                color:
-                                                                    primaryColor,
+                                                                color: primaryColor,
                                                             }}
                                                         >
                                                             <Flame className="h-3.5 w-3.5" />
@@ -601,20 +600,16 @@ export default function PublicMenuClient({
                                                 </div>
                                             )}
 
-                                            <div className="p-4">
+                                            <div className="relative z-10 p-4 pointer-events-none">
                                                 <div className="flex items-start justify-between gap-4">
                                                     <div className="min-w-0">
                                                         <h3 className="text-base font-extrabold text-gray-950">
-                                                            {
-                                                                meal.name
-                                                            }
+                                                            {meal.name}
                                                         </h3>
 
                                                         {meal.description && (
                                                             <p className="text-ellipsis mt-2 text-sm font-medium leading-6 text-gray-500">
-                                                                {
-                                                                    meal.description
-                                                                }
+                                                                {meal.description}
                                                             </p>
                                                         )}
                                                     </div>
@@ -622,13 +617,10 @@ export default function PublicMenuClient({
                                                     <span
                                                         className="shrink-0 text-base font-extrabold"
                                                         style={{
-                                                            color:
-                                                                primaryColor,
+                                                            color: primaryColor,
                                                         }}
                                                     >
-                                                        {formatPrice(
-                                                            meal.price
-                                                        )}
+                                                        {formatPrice(meal.price)}
                                                     </span>
                                                 </div>
 
@@ -639,70 +631,54 @@ export default function PublicMenuClient({
                                                                 ? "متوفر الآن"
                                                                 : "غير متوفر"}
                                                         </span>
+
                                                         <span className="block text-sm">
                                                             اضغط لعرض التفاصيل
                                                         </span>
                                                     </div>
 
                                                     {meal.is_available &&
-                                                        (quantity ===
-                                                            0 ? (
+                                                        (quantity === 0 ? (
                                                             <button
                                                                 type="button"
-                                                                onClick={() =>
-                                                                    addToCart(
-                                                                        meal
-                                                                    )
-                                                                }
-                                                                className="flex h-11 w-11 items-center justify-center rounded-full text-white shadow-sm transition active:scale-95"
+                                                                onClick={() => addToCart(meal)}
+                                                                className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full text-white shadow-sm transition active:scale-95"
                                                                 style={{
-                                                                    backgroundColor:
-                                                                        primaryColor,
+                                                                    backgroundColor: primaryColor,
                                                                 }}
                                                             >
                                                                 <Plus className="h-5 w-5" />
                                                             </button>
                                                         ) : (
                                                             <div
-                                                                className="flex items-center gap-3 rounded-full border px-2 py-1"
+                                                                className="pointer-events-auto flex items-center gap-3 rounded-full border px-2 py-1"
                                                                 style={{
-                                                                    borderColor:
-                                                                        `${primaryColor}35`,
+                                                                    borderColor: `${primaryColor}35`,
                                                                 }}
                                                             >
                                                                 <button
                                                                     type="button"
-                                                                    onClick={() =>
-                                                                        addToCart(
-                                                                            meal
-                                                                        )
-                                                                    }
+                                                                    onClick={() => addToCart(meal)}
                                                                     className="flex h-8 w-8 items-center justify-center rounded-full text-white"
                                                                     style={{
-                                                                        backgroundColor:
-                                                                            primaryColor,
+                                                                        backgroundColor: primaryColor,
                                                                     }}
                                                                 >
                                                                     <Plus className="h-4 w-4" />
                                                                 </button>
 
                                                                 <span className="min-w-5 text-center text-sm font-bold">
-                                                                    {
-                                                                        quantity
-                                                                    }
+                                                                    {quantity}
                                                                 </span>
 
                                                                 <button
                                                                     type="button"
                                                                     onClick={() =>
-                                                                        decreaseFromCart(
-                                                                            meal.id
-                                                                        )
+                                                                        decreaseFromCart(meal.id)
                                                                     }
                                                                     className="flex h-8 w-8 items-center justify-center rounded-full border text-gray-600"
                                                                     style={{
-                                                                        borderColor:
-                                                                            `${primaryColor}35`,
+                                                                        borderColor: `${primaryColor}35`,
                                                                     }}
                                                                 >
                                                                     <Minus className="h-4 w-4" />
