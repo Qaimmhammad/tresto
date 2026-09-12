@@ -170,6 +170,8 @@ Route::post(
     [OrderController::class, 'storeDineIn']
 )->name('orders.dine-in');
 
+Route::get("/meals/{meal}" , [MealController::class, "show"]);
+
 Route::post(
     'branches/orders/{branch}',
     [OrderController::class, 'store']

@@ -89,7 +89,6 @@ export default function MealsPage() {
 
         await createCategoryAction({ name: categoryName });
 
-        // Refresh categories after creating a new one
         const updatedCategories = await getCategoriesAction();
         setCategories(updatedCategories);
 
@@ -115,7 +114,6 @@ export default function MealsPage() {
         e.preventDefault();
         if (!editingMeal) return;
 
-        // TODO: استدعاء الـ Server Action / API الخاص بالتعديل هنا
         await updateMealAction(editingMeal);
 
         setIsEditOpen(false);

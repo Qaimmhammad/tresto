@@ -8,7 +8,7 @@ export default function UrlComponent() {
   const params = useSearchParams();
   const [copied, setCopied] = useState<boolean>(false);
   const slug = params.get("slug") || "";
-  const fullUrl = `https://tresto.strangled.net/${slug}`;
+  const fullUrl = `https://tresto.strangled.net/r/${slug}`;
 
   const handleCopy = async () => {
     try {

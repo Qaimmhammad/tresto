@@ -5,7 +5,7 @@ import { useOrderStore } from "@/app/stores/use-order-store";
 
 import { getCategoriesAction } from "../../dashboard/meals/categories-actions";
 import { getMealsAction } from "../../dashboard/meals/actions";
-import {getDataAction} from "./get-data-action";
+import { getDataAction } from "./get-data-action";
 
 import {
     Search,
@@ -419,23 +419,23 @@ export default function PublicMenuClient({
                             className="shrink-0 rounded-full border px-5 py-2.5 text-sm font-semibold transition"
                             style={
                                 selectedCategory ===
-                                "all"
+                                    "all"
                                     ? {
-                                          backgroundColor:
-                                              primaryColor,
-                                          borderColor:
-                                              primaryColor,
-                                          color:
-                                              primaryTextColor,
-                                      }
+                                        backgroundColor:
+                                            primaryColor,
+                                        borderColor:
+                                            primaryColor,
+                                        color:
+                                            primaryTextColor,
+                                    }
                                     : {
-                                          backgroundColor:
-                                              "#FFFFFF",
-                                          borderColor:
-                                              `${primaryColor}35`,
-                                          color:
-                                              "#4B5563",
-                                      }
+                                        backgroundColor:
+                                            "#FFFFFF",
+                                        borderColor:
+                                            `${primaryColor}35`,
+                                        color:
+                                            "#4B5563",
+                                    }
                             }
                         >
                             الكل
@@ -459,25 +459,25 @@ export default function PublicMenuClient({
                                                     category.id
                                                 )
                                             }
-                                            className="shrink-0 rounded-full border px-5 py-2.5 text-sm font-semibold transition"
+                                            className="shrink-0 rounded-3xl border px-5 py-2.5 text-lg font-semibold transition"
                                             style={
                                                 active
                                                     ? {
-                                                          backgroundColor:
-                                                              primaryColor,
-                                                          borderColor:
-                                                              primaryColor,
-                                                          color:
-                                                              primaryTextColor,
-                                                      }
+                                                        backgroundColor:
+                                                            primaryColor,
+                                                        borderColor:
+                                                            primaryColor,
+                                                        color:
+                                                            primaryTextColor,
+                                                    }
                                                     : {
-                                                          backgroundColor:
-                                                              "#FFFFFF",
-                                                          borderColor:
-                                                              `${primaryColor}35`,
-                                                          color:
-                                                              "#4B5563",
-                                                      }
+                                                        backgroundColor:
+                                                            "#FFFFFF",
+                                                        borderColor:
+                                                            `${primaryColor}35`,
+                                                        color:
+                                                            "#4B5563",
+                                                    }
                                             }
                                         >
                                             {
@@ -524,7 +524,7 @@ export default function PublicMenuClient({
                             )}
                         </div>
                     ) : filteredMeals.length ===
-                      0 ? (
+                        0 ? (
                         <div className="rounded-2xl border border-gray-200 bg-white px-6 py-16 text-center">
                             <div
                                 className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
@@ -551,7 +551,7 @@ export default function PublicMenuClient({
                             </p>
                         </div>
                     ) : (
-                        <div className="space-y-5">
+                        <div className="space-y-5 grid grid-cols-2">
                             {filteredMeals.map(
                                 (meal) => {
                                     const quantity =
@@ -575,7 +575,7 @@ export default function PublicMenuClient({
                                                         alt={
                                                             meal.name
                                                         }
-                                                        className="h-full w-full object-cover"
+                                                        className="h-full w-full object-contain"
                                                     />
 
                                                     {meal.is_popular && (
@@ -611,7 +611,7 @@ export default function PublicMenuClient({
                                                         </h3>
 
                                                         {meal.description && (
-                                                            <p className="mt-2 text-sm font-medium leading-6 text-gray-500">
+                                                            <p className="text-ellipsis mt-2 text-sm font-medium leading-6 text-gray-500">
                                                                 {
                                                                     meal.description
                                                                 }
@@ -633,15 +633,20 @@ export default function PublicMenuClient({
                                                 </div>
 
                                                 <div className="mt-4 flex items-center justify-between">
-                                                    <span className="text-xs font-semibold text-gray-400">
-                                                        {meal.is_available
-                                                            ? "متوفر الآن"
-                                                            : "غير متوفر"}
-                                                    </span>
+                                                    <div>
+                                                        <span className="text-lg font-semibold text-gray-800">
+                                                            {meal.is_available
+                                                                ? "متوفر الآن"
+                                                                : "غير متوفر"}
+                                                        </span>
+                                                        <span className="block text-sm">
+                                                            اضغط لعرض التفاصيل
+                                                        </span>
+                                                    </div>
 
                                                     {meal.is_available &&
                                                         (quantity ===
-                                                        0 ? (
+                                                            0 ? (
                                                             <button
                                                                 type="button"
                                                                 onClick={() =>
@@ -819,7 +824,7 @@ export default function PublicMenuClient({
                                                 >
                                                     {formatPrice(
                                                         item.price ??
-                                                            0
+                                                        0
                                                     )}
                                                 </p>
                                             </div>

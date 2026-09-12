@@ -13,12 +13,9 @@ export type UpdateBranchData = {
   address: string;
 };
 
-type BranchesResponse = {
-  data: Branch[];
-};
 
 export async function getBranchesAction() {
-  const response = await serverFetch<BranchesResponse>(
+  const response = await serverFetch<Branch[]>(
     `/branches`,
   );
 

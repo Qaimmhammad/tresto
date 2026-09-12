@@ -43,23 +43,23 @@ export default function OrdersClient({
                     </h2>
 
                     <p className="mt-1 text-xs font-medium text-gray-500">
-                        اختر اليوم لعرض الطلبات الخاصة به.
+                        اختر الفترة لعرض الطلبات الخاصة بها.
                     </p>
                 </div>
 
-                <div className="relative">
+                <div className="relative w-full sm:w-auto">
                     <CalendarDays className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
 
-                    <input
-                        type="date"
-                        value={
-                            selectedDate === "today"
-                                ? new Date().toISOString().split("T")[0]
-                                : selectedDate
-                        }
+                    <select
+                        value={selectedDate}
                         onChange={(e) => handleDateChange(e.target.value)}
-                        className="h-10 rounded-xl border border-gray-200 bg-[#FAF8F5] pr-9 pl-3 text-sm font-medium text-gray-700 outline-none transition focus:border-[#B42318] focus:ring-2 focus:ring-[#B42318]/10"
-                    />
+                        disabled={loading}
+                        className="w-full appearance-none rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-10 text-sm font-semibold text-gray-700 outline-none transition focus:border-[#B42318] focus:ring-2 focus:ring-[#B42318]/10 disabled:cursor-not-allowed disabled:opacity-60 sm:w-44"
+                    >
+                        <option value="today">اليوم</option>
+                        <option value="week">هذا الأسبوع</option>
+                        <option value="month">هذا الشهر</option>
+                    </select>
                 </div>
             </div>
 
@@ -87,7 +87,7 @@ export default function OrdersClient({
                     </h3>
 
                     <p className="mt-1 max-w-sm text-sm font-medium text-gray-500">
-                        لا توجد أي طلبات في التاريخ المحدد.
+                        لا توجد أي طلبات في الفترة المحددة.
                     </p>
                 </div>
             ) : (
@@ -107,7 +107,8 @@ export default function OrdersClient({
                                         <h3 className="text-base font-bold text-gray-950">
                                             طلب #{order.order_number ?? order.orderNumber ?? order.id.slice(0, 6)}
                                         </h3>
-                                        <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200">
+
+                                        <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700">
                                             مكتمل
                                         </span>
                                     </div>
@@ -115,8 +116,10 @@ export default function OrdersClient({
                                     <div className="flex items-center gap-3 text-xs font-medium text-gray-500">
                                         <span>{order.orderType || "محلي"}</span>
                                         <span>•</span>
+
                                         <div className="flex items-center gap-1">
                                             <Clock className="h-3.5 w-3.5" />
+
                                             <span>
                                                 {order.createdAt
                                                     ? new Date(order.createdAt).toLocaleTimeString("ar-IQ", {
@@ -134,8 +137,12 @@ export default function OrdersClient({
                                 <span className="text-xs font-medium text-gray-400 sm:hidden">
                                     الإجمالي
                                 </span>
+
                                 <span className="text-base font-extrabold text-[#B42318]">
-                                    {order.totalPrice?.toLocaleString()} <span className="text-xs font-bold text-gray-500">د.ع</span>
+                                    {order.totalPrice?.toLocaleString()}{" "}
+                                    <span className="text-xs font-bold text-gray-500">
+                                        د.ع
+                                    </span>
                                 </span>
                             </div>
                         </div>
