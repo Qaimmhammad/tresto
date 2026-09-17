@@ -1,20 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { setTableCountAction } from "@/app/dashboard/tables/actions";
-import { Loader2, ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import Link from "next/link";
+import { getBranchesAction } from "../../branches/action";
 
 type Props = {
     currentCount: number;
 };
 
+type Branch = {
+    id: string;
+    name: string;
+};
+
 export function AddTablesForm({ currentCount }: Props) {
+    const [branches, setBranches] = useState<Branch[]>([]);
+    const [selectedBranch, setSelectedBranch] = useState<string>("");
     const [countInput, setCountInput] = useState<string>(currentCount > 0 ? String(currentCount) : "");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+
+    useEffect(() => {
+        async function fetchBranches() {
+            try {
+                const data = await getBranchesAction();
+                setBranches(data);
+                if (data && data.length > 0) {
+                    setSelectedBranch(data[0].id);
+                }
+            } catch (err) {
+                setError("فشل في جلب قائمة الفروع.");
+            }
+        }
+        fetchBranches();
+    }, []);
 
     const parsedInput = parseInt(countInput, 10);
     const isValid = !isNaN(parsedInput) && parsedInput > 0 && Number.isInteger(parsedInput);
@@ -23,6 +46,11 @@ export function AddTablesForm({ currentCount }: Props) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+
+        if (!selectedBranch) {
+            setError("يرجى اختيار الفرع.");
+            return;
+        }
 
         if (!isValid) {
             setError("يرجى إدخال رقم صحيح أكبر من الصفر.");
@@ -41,7 +69,7 @@ export function AddTablesForm({ currentCount }: Props) {
 
         setLoading(true);
 
-        const res = await setTableCountAction(parsedInput);
+        const res = await setTableCountAction(parsedInput , selectedBranch);
 
         setLoading(false);
 
@@ -55,6 +83,29 @@ export function AddTablesForm({ currentCount }: Props) {
 
     return (
         <form onSubmit={handleSubmit} className="p-6 rounded-xl border bg-card space-y-6">
+            <div className="space-y-2">
+                <label htmlFor="branch" className="text-sm font-medium leading-none">
+                    اختر الفرع
+                </label>
+                <select
+                    id="branch"
+                    value={selectedBranch}
+                    onChange={(e) => setSelectedBranch(e.target.value)}
+                    className="w-full px-3 py-2 border rounded-lg bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                    disabled={loading || branches.length === 0}
+                >
+                    {branches.length === 0 ? (
+                        <option value="">جاري تحميل الفروع...</option>
+                    ) : (
+                        branches.map((branch) => (
+                            <option key={branch.id} value={branch.id}>
+                                {branch.name}
+                            </option>
+                        ))
+                    )}
+                </select>
+            </div>
+
             <div className="space-y-2">
                 <label htmlFor="count" className="text-sm font-medium leading-none">
                     كم عدد الطاولات الموجودة في المطعم؟
@@ -110,7 +161,7 @@ export function AddTablesForm({ currentCount }: Props) {
                 </Link>
                 <button
                     type="submit"
-                    disabled={loading || !isValid || difference <= 0}
+                    disabled={loading || !isValid || difference <= 0 || !selectedBranch}
                     className="inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
                 >
                     {loading && <Loader2 className="w-4 h-4 animate-spin" />}

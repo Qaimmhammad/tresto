@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Branch;
 use App\Models\Table;
+use DB;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use DB;
 
 class TableController extends Controller
 {
@@ -21,17 +21,32 @@ class TableController extends Controller
     {
         $user = $request->user();
 
-        $branchId = $user->branch_id ; 
-        if (!$branchId){
-            return response()->json([
-                "message" => "tables should be managed from a branch manager account",
-            ], 422);
-        }
         $this->authorize('viewAny', Table::class);
 
-        $tables = Table::where('branch_id', $branchId)
-            ->orderBy('table_number')
-            ->get();
+        $query = Table::query()->orderBy('table_number');
+
+        if ($user->role === 'admin') {
+            if (! $user->restaurant_id) {
+                return response()->json([
+                    'message' => 'Admin is not associated with any restaurant.',
+                ], 422);
+            }
+
+            // الآدمن يرى طاولات جميع فروع مطعمه
+            $branchIds = Branch::where('restaurant_id', $user->restaurant_id)->pluck('id');
+            $query->whereIn('branch_id', $branchIds);
+        } else {
+            // مدير الفرع يرى طاولات فرعه المحدد فقط
+            if (! $user->branch_id) {
+                return response()->json([
+                    'message' => 'Tables should be managed from a branch manager account.',
+                ], 422);
+            }
+
+            $query->where('branch_id', $user->branch_id);
+        }
+
+        $tables = $query->get();
 
         return response()->json([
             'data' => $tables,
@@ -51,7 +66,7 @@ class TableController extends Controller
 
         $token = Str::random(32);
 
-        $qrData = url("/t/{$token}");
+        $qrData = url("https://tresto.strangled.net/t/{$token}");
 
         $branch = Branch::findOrFail($branchId);
 
@@ -120,14 +135,17 @@ class TableController extends Controller
     {
         $table = Table::where(
             'qr_code',
-            url("/t/{$token}")
-        )->firstOrFail();
+            "https://tresto.strangled.net/t/{$token}"
+        )
+            ->with('branch.restaurant')
+            ->firstOrFail();
 
         return response()->json([
             'data' => [
                 'table_id' => $table->id,
                 'branch_id' => $table->branch_id,
                 'number' => $table->table_number,
+                'restaurant_slug' => $table->branch->restaurant->slug,
             ],
         ]);
     }
@@ -136,12 +154,14 @@ class TableController extends Controller
     {
         $validated = $request->validate([
             'count' => ['required', 'integer', 'min:1'],
+            'branch_id' => ['required', 'exists:branches,id'],
         ]);
 
         $requestedCount = $validated['count'];
+        $branchId = $validated['branch_id'];
 
-        $result = DB::transaction(function () use ($requestedCount) {
-            $currentCount = Table::count();
+        $result = DB::transaction(function () use ($requestedCount, $branchId) {
+            $currentCount = Table::where('branch_id', $branchId)->count();
 
             if ($requestedCount <= $currentCount) {
                 return [
@@ -160,9 +180,12 @@ class TableController extends Controller
                 $number <= $requestedCount;
                 $number++
             ) {
+                $tablesId = (string) Str::ulid();
                 $tablesToCreate[] = [
-                    'id' => (string) Str::ulid(),
-                    'number' => $number,
+                    'id' => $tablesId,
+                    'table_number' => $number,
+                    'branch_id' => $branchId,
+                    'qr_code' => "https://tresto.strangled.net/t/$tablesId",
                 ];
             }
 

@@ -23,7 +23,11 @@ class OrderController extends Controller
         StoreOrderRequest $request,
         Branch $branch
     ): JsonResponse {
-        $restaurant = Restaurant::where("id" , $branch->restaurant_id)->firstOrFail();
+        $restaurant = Restaurant::where(
+            'id',
+            $branch->restaurant_id
+        )->firstOrFail();
+
         $order = $this->orderService->create(
             $request->validated(),
             $restaurant,
@@ -49,25 +53,108 @@ class OrderController extends Controller
         ], 201);
     }
 
-    public function changeStatus(
-        string $orderId,
-        string $status
+    public function show(
+        Request $request,
+        Order $order
     ): JsonResponse {
-        $order = Order::find($orderId);
+        $this->authorizeOrderAccess($request, $order);
 
-        if (!$order) {
-            return response()->json([
-                'message' => 'Order not found.',
-            ], 404);
-        }
-
-        $order->update([
-            'status' => $status,
+        $order->load([
+            'items',
+            'table',
+            'branch',
+            'restaurant',
         ]);
 
         return response()->json([
-            'message' => 'Status updated successfully.',
-            'status' => $order->status,
+            'data' => $order,
+        ]);
+    }
+
+    public function changeStatus(
+        Request $request,
+        Order $order
+    ): JsonResponse {
+        $this->authorizeOrderAccess($request, $order);
+
+        $request->validate([
+            'status' => [
+                'required',
+                Rule::in([
+                    'pending',
+                    'accepted',
+                    'preparing',
+                    'ready',
+                    'delivering',
+                    'completed',
+                    'rejected',
+                    'cancelled',
+                ]),
+            ],
+        ]);
+
+        $newStatus = $request->string('status')->toString();
+
+        $allowedTransitions = [
+            'pending' => [
+                'accepted',
+                'rejected',
+                'cancelled',
+            ],
+
+            'accepted' => [
+                'preparing',
+                'cancelled',
+            ],
+
+            'preparing' => [
+                'ready',
+                'cancelled',
+            ],
+
+            'ready' => [
+                'delivering',
+                'completed',
+                'cancelled',
+            ],
+
+            'delivering' => [
+                'completed',
+                'cancelled',
+            ],
+
+            'completed' => [],
+
+            'rejected' => [],
+
+            'cancelled' => [],
+        ];
+
+        $currentStatus = $order->status;
+
+        if (
+            ! in_array(
+                $newStatus,
+                $allowedTransitions[$currentStatus] ?? [],
+                true
+            )
+        ) {
+            return response()->json([
+                'message' => "Cannot change order status from {$currentStatus} to {$newStatus}.",
+            ], 422);
+        }
+
+        $order->update([
+            'status' => $newStatus,
+        ]);
+
+        return response()->json([
+            'message' => 'Order status updated successfully.',
+            'data' => $order->fresh([
+                'items',
+                'table',
+                'branch',
+            ]),
         ]);
     }
 
@@ -92,8 +179,14 @@ class OrderController extends Controller
         $query = Order::query()
             ->where('restaurant_id', $user->restaurant_id);
 
-        if (in_array($user->role, ['employee', 'branch_manager'])) {
-            $query->where('branch_id', $user->branch_id);
+        if (in_array($user->role, [
+            'employee',
+            'branch_manager',
+        ])) {
+            $query->where(
+                'branch_id',
+                $user->branch_id
+            );
         }
 
         match ($period) {
@@ -134,5 +227,28 @@ class OrderController extends Controller
             'data' => $orders,
             'period' => $period,
         ]);
+    }
+
+    private function authorizeOrderAccess(
+        Request $request,
+        Order $order
+    ): void {
+        $user = $request->user();
+
+        if (
+            $order->restaurant_id !== $user->restaurant_id
+        ) {
+            abort(403, 'You do not have access to this order.');
+        }
+
+        if (
+            in_array($user->role, [
+                'employee',
+                'branch_manager',
+            ]) &&
+            $order->branch_id !== $user->branch_id
+        ) {
+            abort(403, 'You do not have access to this order.');
+        }
     }
 }

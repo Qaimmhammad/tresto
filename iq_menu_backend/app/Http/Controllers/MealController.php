@@ -41,7 +41,7 @@ class MealController extends Controller
             'price' => $request->price,
             'image_url' => $request->image_url,
             'is_available' => $request->boolean('is_available', true),
-            'options' => $request->options,
+            'options' => $request->options ?? [],
         ]);
 
         return response()->json([

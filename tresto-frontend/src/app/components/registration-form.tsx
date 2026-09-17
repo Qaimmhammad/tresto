@@ -61,16 +61,6 @@ export default function RegistrationForm({
 
     updateAdmin(admin);
 
-    console.log(
-      "Restaurant:",
-      restaurantName
-    );
-
-    console.log(
-      "Admin:",
-      admin
-    );
-
     router.push(route);
   };
 

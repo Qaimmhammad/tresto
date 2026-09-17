@@ -11,22 +11,22 @@ import { getBranches } from "@/api/branches/branches";
 
 
 
-export async function createOrderAction(
-  branchId: string | number, 
-  data: CreateOrderPayload
-) {
-  try {
-    return await createOrder(branchId, data);
-  } catch (error: any) {
-    throw new Error(error?.message || "حدث خطأ أثناء إنشاء الطلب.");
-  }
-}
-
 export async function getBranchesAction(restaurantSlug: string) { 
     const response = await getBranches(restaurantSlug);
     return response ; 
 }
 
+export async function createDineInOrderAction(
+    tableUlid: string | number,
+    data: CreateDineInOrderPayload
+) {
+  console.log(`TABLE ULID IN THE CREATE DINE IN ORDER IS : ${tableUlid}`)
+    try {
+        return await createDineInOrder(tableUlid, data);
+    } catch (error: any) {
+        throw new Error(error?.message || "حدث خطأ أثناء إنشاء الطلب.");
+    }
+}
 
 
 export type {

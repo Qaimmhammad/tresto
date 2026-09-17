@@ -82,7 +82,7 @@ export default function RestaurantPreferencesPage() {
         uploadedLogoUrl = await uploadLogo(logoFile);
       }
 
-      await registerRestaurant({
+      const response = await registerRestaurant({
         restaurant: data.restaurant,
         admin: data.admin,
         restaurantSettings: {
@@ -95,7 +95,9 @@ export default function RestaurantPreferencesPage() {
         },
       });
 
-      router.push("/dashboard");
+      const slug = response.restaurant.slug ; 
+
+      router.push(`/dashboard?slug=${slug}`);
     } catch (error) {
       setError(
         error instanceof Error

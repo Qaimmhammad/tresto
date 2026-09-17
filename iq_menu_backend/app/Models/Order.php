@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 class Order extends Model
 {
     use HasUlids;
+
     protected $fillable = [
         'restaurant_id',
         'branch_id',
@@ -38,7 +39,7 @@ class Order extends Model
         return $this->belongsTo(Branch::class);
     }
 
-    public function table(): BelongsTo 
+    public function table(): BelongsTo
     {
         return $this->belongsTo(Table::class);
     }
@@ -47,14 +48,13 @@ class Order extends Model
     {
         static::creating(function (Order $order) {
             if (! $order->order_number) {
-                $order->order_number = DB::transaction(function () use ($order) {
-                    $maxOrderNumber = DB::table('orders')
-                        ->where('restaurant_id', $order->restaurant_id)
-                        ->lockForUpdate()
-                        ->max('order_number');
+                $lastOrder = DB::table('orders')
+                    ->where('restaurant_id', $order->restaurant_id)
+                    ->orderByDesc('order_number')
+                    ->lockForUpdate()
+                    ->first();
 
-                    return ($maxOrderNumber ?? 0) + 1;
-                });
+                $order->order_number = ($lastOrder?->order_number ?? 0) + 1;
             }
         });
     }

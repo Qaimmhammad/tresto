@@ -131,8 +131,6 @@ export default async function DashboardPage(
           </p>
 
           <div className="mt-2 flex items-center gap-1 text-xs font-semibold text-green-600">
-            <TrendingUp className="h-3.5 w-3.5" />
-            <span>12% مقارنة بالفترة السابقة</span>
           </div>
         </Link>
 
@@ -159,8 +157,6 @@ export default async function DashboardPage(
           </p>
 
           <div className="mt-2 flex items-center gap-1 text-xs font-semibold text-white/80">
-            <TrendingUp className="h-3.5 w-3.5" />
-            <span>5% مقارنة بالأمس</span>
           </div>
         </Link>
       </section>

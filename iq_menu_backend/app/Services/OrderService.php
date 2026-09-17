@@ -19,7 +19,7 @@ class OrderService
         Restaurant $restaurant,
         Branch $branch
     ): Order {
-        return DB::transaction(function () use ($data , $restaurant , $branch) {
+        return DB::transaction(function () use ($data, $restaurant, $branch) {
             if ($branch->restaurant_id !== $restaurant->id) {
                 throw ValidationException::withMessages([
                     'branch' => 'The selected branch does not belong to this restaurant.',
@@ -45,7 +45,7 @@ class OrderService
 
             $branch = $table->branch;
 
-            if (!$branch) {
+            if (! $branch) {
                 throw ValidationException::withMessages([
                     'table' => 'This table is not associated with a branch.',
                 ]);
@@ -53,7 +53,7 @@ class OrderService
 
             $restaurant = $branch->restaurant;
 
-            if (!$restaurant) {
+            if (! $restaurant) {
                 throw ValidationException::withMessages([
                     'table' => 'This table is not associated with a restaurant.',
                 ]);
@@ -115,20 +115,21 @@ class OrderService
             $quantity = $item['quantity'];
 
             $selectedOptions = $item['selected_options'] ?? [];
-
             $optionsPrice = 0;
 
             foreach ($selectedOptions as $selectedOption) {
-                $option = collect($meal->options)
-                    ->firstWhere('name', $selectedOption);
+                $optionName = $selectedOption['name'];
 
-                if (!$option) {
+                $option = collect($meal->options)
+                    ->firstWhere('name', $optionName);
+
+                if (! $option) {
                     throw ValidationException::withMessages([
-                        'items' => "Invalid option '{$selectedOption}' for meal '{$meal->name}'.",
+                        'items' => "Invalid option '{$optionName}' for meal '{$meal->name}'.",
                     ]);
                 }
 
-                $optionsPrice += $option['price'];
+                $optionsPrice += (float) $option['price'];
             }
 
             $unitPrice = $meal->price + $optionsPrice;

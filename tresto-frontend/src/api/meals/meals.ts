@@ -1,5 +1,5 @@
 import serverFetch from "../server-client"
-import MealModel from "@/models/meal-model"
+import MealModel, { MealOption } from "@/models/meal-model"
 
 export type CreateMealPayload = {
   categoryId: string
@@ -43,8 +43,36 @@ export async function createMeal(data: CreateMealPayload): Promise<MealModel> {
   })
 }
 
-export async function getMeal(mealId: string | number): Promise<MealModel> {
-  return serverFetch<MealModel>(`/meals/${mealId}`)
+export async function getMeal(
+    mealId: string | number
+): Promise<MealModel> {
+    const response = await serverFetch<{
+        data: {
+            id: string;
+            restaurant_id: string;
+            category_id: string;
+            name: string;
+            description: string | null;
+            price: number;
+            image_url: string;
+            is_available: boolean;
+            options: MealOption[] | null | [];
+        };
+    }>(`/meals/${mealId}`);
+
+    const meal = response.data;
+
+    return {
+        id: meal.id,
+        restaurantId: meal.restaurant_id,
+        categoryId: meal.category_id,
+        name: meal.name,
+        description: meal.description,
+        price: Number(meal.price),
+        imageUrl: meal.image_url,
+        isAvailable: meal.is_available,
+        options: meal.options ?? [],
+    };
 }
 
 export async function updateMeal(

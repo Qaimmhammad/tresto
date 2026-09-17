@@ -14,6 +14,7 @@ import {
     ShoppingCart,
     X,
     Flame,
+    Table,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -63,6 +64,11 @@ type Meal = {
 type Props = {
     data: RestaurantResponse;
     slug: string;
+    table?: {
+        id: string;
+        branch_id: string;
+        number: number;
+    }
 };
 
 function formatPrice(price: number) {
@@ -109,6 +115,7 @@ function getContrastTextColor(hex: string) {
 export default function PublicMenuClient({
     data,
     slug,
+    table
 }: Props) {
     const {
         restaurant,
@@ -551,7 +558,7 @@ export default function PublicMenuClient({
                             </p>
                         </div>
                     ) : (
-                        <div className="space-y-5 grid grid-cols-2">
+                        <div className="space-y-5 grid grid-cols-2 space-x-5">
                             {filteredMeals.map(
                                 (meal) => {
                                     const quantity =
@@ -565,7 +572,7 @@ export default function PublicMenuClient({
                                             className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm"
                                         >
                                             <Link
-                                                href={`/r/${slug}/meal/${meal.id}`}
+                                                href={table ? `/t/${table.id}/meal/${meal.id}` : `/r/${slug}/meal/${meal.id}`}
                                                 className="absolute inset-0 z-0"
                                                 aria-label={`عرض تفاصيل ${meal.name}`}
                                             />
@@ -608,7 +615,7 @@ export default function PublicMenuClient({
                                                         </h3>
 
                                                         {meal.description && (
-                                                            <p className="text-ellipsis mt-2 text-sm font-medium leading-6 text-gray-500">
+                                                            <p className="mt-2 line-clamp-2 text-sm font-medium leading-6 text-gray-500">
                                                                 {meal.description}
                                                             </p>
                                                         )}
@@ -873,7 +880,11 @@ export default function PublicMenuClient({
                                 </div>
 
                                 <Link
-                                    href={`/r/${slug}/checkout?slug=${slug}`}
+                                    href={
+                                        table
+                                            ? `/t/${table.id}/checkout`
+                                            : `/r/${slug}/checkout?slug=${slug}`
+                                    }
                                     onClick={() =>
                                         setCartOpen(
                                             false

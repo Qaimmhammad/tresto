@@ -4,7 +4,8 @@
 type Table = { 
     id: string,
     branchId: string,
-    tableNumber: number
+    tableNumber: number,
+    qr_code: string
 }
 
 export default Table ; 

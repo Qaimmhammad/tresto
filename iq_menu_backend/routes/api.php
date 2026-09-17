@@ -34,6 +34,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/dashboard/summary', [DashboardController::class, 'summary']);
 
     Route::get('/orders/get', [OrderController::class, 'getOrders']);
+    
+    Route::get('/orders/{order}', [OrderController::class, 'show']);
+
+    Route::patch(
+        '/orders/{order}',
+        [OrderController::class, 'changeStatus']
+    );
 
     Route::get('/users/all', [UserController::class, 'index']);
 
@@ -170,7 +177,7 @@ Route::post(
     [OrderController::class, 'storeDineIn']
 )->name('orders.dine-in');
 
-Route::get("/meals/{meal}" , [MealController::class, "show"]);
+Route::get('/meals/{meal}', [MealController::class, 'show']);
 
 Route::post(
     'branches/orders/{branch}',

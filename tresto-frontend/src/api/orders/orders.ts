@@ -71,3 +71,38 @@ export async function getOrders(period: string | null) {
   const response: any = await serverFetch(endpoint);
   return response?.data ?? [];
 }
+
+export async function getOrder(orderId: string) {
+  const response: any = await serverFetch(
+    `/orders/${orderId}`
+  );
+
+  return response?.data;
+}
+
+export type OrderStatus =
+  | "pending"
+  | "accepted"
+  | "preparing"
+  | "ready"
+  | "delivering"
+  | "completed"
+  | "rejected"
+  | "cancelled";
+
+export async function updateOrderStatus(
+  orderId: string,
+  status: OrderStatus
+) {
+  const response: any = await serverFetch(
+    `/orders/${orderId}`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({
+        status,
+      }),
+    }
+  );
+
+  return response?.data;
+}

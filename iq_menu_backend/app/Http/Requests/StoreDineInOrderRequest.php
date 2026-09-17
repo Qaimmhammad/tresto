@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreDineInOrderRequest extends FormRequest
@@ -57,7 +56,20 @@ class StoreDineInOrderRequest extends FormRequest
             ],
 
             'items.*.selected_options.*' => [
+                'required',
+                'array',
+            ],
+
+            'items.*.selected_options.*.name' => [
+                'required',
                 'string',
+                'max:100',
+            ],
+
+            'items.*.selected_options.*.price' => [
+                'required',
+                'numeric',
+                'min:0',
             ],
         ];
     }

@@ -13,11 +13,14 @@ export async function getTablesAction(): Promise<Table[]> {
     }
 }
 
-export async function setTableCountAction(count: number): Promise<{ success: boolean; message?: string }> {
+export async function setTableCountAction(count: number, branchId: string): Promise<{ success: boolean; message?: string }> {
     try {
-        const response = await serverFetch<Table[]>("/api/dashboard/tables/bulk", {
+        const response = await serverFetch<Table[]>("/tables/bulk", {
             method: "POST",
-            body: JSON.stringify({ count }),
+            body: JSON.stringify({ 
+                count ,
+                branch_id: branchId
+            }),
         });
 
         if (response) {

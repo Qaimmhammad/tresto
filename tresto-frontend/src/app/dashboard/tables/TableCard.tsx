@@ -1,9 +1,8 @@
 "use client";
 
-import  Table  from "@/models/table-model";
+import Table from "@/models/table-model";
 import { QRCodeSVG } from "qrcode.react";
 import { QrCode, CheckSquare, Square } from "lucide-react";
-import { useEffect, useState } from "react";
 
 type Props = {
     table: Table;
@@ -13,15 +12,7 @@ type Props = {
 };
 
 export function TableCard({ table, isSelected = false, onToggleSelect, selectable = false }: Props) {
-    const [origin, setOrigin] = useState<string>("");
-
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            setOrigin(window.location.origin);
-        }
-    }, []);
-
-    const qrUrl = origin ? `${origin}/t/${table.id}` : "";
+    const qrUrl = table.qr_code || "";
 
     return (
         <div className={`p-5 rounded-xl border bg-card text-card-foreground shadow-sm transition-all ${isSelected ? "ring-2 ring-primary border-primary" : ""}`}>
@@ -47,7 +38,7 @@ export function TableCard({ table, isSelected = false, onToggleSelect, selectabl
                 {qrUrl ? (
                     <QRCodeSVG value={qrUrl} size={110} level="M" />
                 ) : (
-                    <div className="w-[110px] h-[110px] bg-muted animate-pulse rounded" />
+                    <div className="w-27.5 h-27.5 bg-muted animate-pulse rounded" />
                 )}
                 <span className="text-xs text-muted-foreground mt-2 dir-ltr">/t/{table.id.substring(0, 8)}...</span>
             </div>
