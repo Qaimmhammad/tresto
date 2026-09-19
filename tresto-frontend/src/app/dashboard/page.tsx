@@ -152,95 +152,10 @@ export default async function DashboardPage(
             </div>
           </div>
 
-          <p className="text-3xl font-extrabold tracking-tight">
-            {summary.ordersTodayCount}
-          </p>
 
-          <div className="mt-2 flex items-center gap-1 text-xs font-semibold text-white/80">
-          </div>
+
         </Link>
       </section>
-
-      {/* Most Ordered Items */}
-      <div
-        className="block rounded-2xl border border-gray-200/80 bg-white p-5 shadow-sm transition hover:shadow-md active:scale-[0.995]"
-      >
-        <div className="mb-5 flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-bold text-gray-950">
-              الأكثر طلباً
-            </h2>
-
-            <p className="mt-1 text-xs font-medium text-gray-500">
-              الوجبات الأكثر طلباً في مطعمك
-            </p>
-          </div>
-
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#B42318]/10">
-            <Hamburger
-              className="h-5 w-5"
-              style={{
-                color: PRIMARY_COLOR,
-              }}
-            />
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          {summary.mostOrderedItems?.length > 0 ? (
-            summary.mostOrderedItems.map((item, index) => (
-              <div
-                key={item.id}
-                className="flex items-center gap-3 rounded-xl bg-[#FAF8F5] p-3"
-              >
-                {/* Rank */}
-                <div
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm font-bold"
-                  style={{
-                    backgroundColor:
-                      index === 0 ? `${PRIMARY_COLOR}15` : "#F3F4F6",
-                    color:
-                      index === 0 ? PRIMARY_COLOR : "#4B5563",
-                  }}
-                >
-                  {index + 1}
-                </div>
-
-                {/* Meal */}
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-bold text-gray-900">
-                    {item.name}
-                  </p>
-
-                  <p className="mt-0.5 text-xs font-medium text-gray-500">
-                    {item.ordersCount} طلب
-                  </p>
-                </div>
-
-                {/* Indicator */}
-                <div
-                  className="h-2 w-2 rounded-full"
-                  style={{
-                    backgroundColor: PRIMARY_COLOR,
-                  }}
-                />
-              </div>
-            ))
-          ) : (
-            <div className="rounded-xl bg-[#FAF8F5] px-4 py-8 text-center">
-              <Hamburger className="mx-auto h-8 w-8 text-gray-300" />
-
-              <p className="mt-3 text-sm font-semibold text-gray-600">
-                لا توجد طلبات كافية حتى الآن
-              </p>
-
-              <p className="mt-1 text-xs text-gray-400">
-                ستظهر الوجبات الأكثر طلباً هنا.
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
     </main>
   );
 }
