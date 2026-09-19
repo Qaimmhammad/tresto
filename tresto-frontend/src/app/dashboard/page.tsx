@@ -83,7 +83,7 @@ export default async function DashboardPage(
             >
               <div className="flex items-start justify-between">
                 <span className="text-3xl font-bold tracking-tight text-gray-950">
-                  {card.value.toLocaleString()}
+                  {card.value}
                 </span>
 
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#B42318]/10">
@@ -127,7 +127,7 @@ export default async function DashboardPage(
           </div>
 
           <p className="text-3xl font-extrabold tracking-tight text-gray-950">
-            {summary.ordersCount.toLocaleString()}
+            {summary.ordersCount}
           </p>
 
           <div className="mt-2 flex items-center gap-1 text-xs font-semibold text-green-600">
@@ -213,7 +213,7 @@ export default async function DashboardPage(
                   </p>
 
                   <p className="mt-0.5 text-xs font-medium text-gray-500">
-                    {item.ordersCount.toLocaleString()} طلب
+                    {item.ordersCount} طلب
                   </p>
                 </div>
 
