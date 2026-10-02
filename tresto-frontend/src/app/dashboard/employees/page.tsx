@@ -57,6 +57,8 @@ export default function UsersPage() {
     const [employees, setEmployees] = useState<UserModel[]>([]);
     const [branches, setBranches] = useState<Branch[]>([]);
 
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
     const [selectedUser, setSelectedUser] =
         useState<UserModel | null>(null);
 
@@ -113,11 +115,13 @@ export default function UsersPage() {
         setEditingUser(null);
         setIsAddDialogOpen(false);
         setForm(emptyForm);
+        setErrorMessage(null);
     }
 
     async function handleCreateUser() {
         try {
             setIsSubmitting(true);
+            setErrorMessage(null);
 
             await createUserAction({
                 name: form.name,
@@ -128,10 +132,15 @@ export default function UsersPage() {
             });
 
             closeDialogs();
-
             await loadUsers();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Failed to create user:", error);
+
+            const msg = error?.response?.data?.errors?.user_name?.[0]
+                || error?.message
+                || "اسم المستخدم مستخدم بالفعل، يرجى اختيار اسم آخر.";
+
+            setErrorMessage(msg);
         } finally {
             setIsSubmitting(false);
         }
@@ -433,6 +442,13 @@ export default function UsersPage() {
                                 placeholder="username"
                                 className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm font-semibold text-gray-950 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
                             />
+                            {errorMessage && (
+                                <p className="text-xs font-bold text-red-600">
+                                    {errorMessage.includes("already been taken")
+                                        ? "اسم المستخدم هذا مأخوذ بالفعل، اختر اسماً آخر."
+                                        : errorMessage}
+                                </p>
+                            )}
                         </div>
 
                         {/* Password */}

@@ -558,7 +558,7 @@ export default function PublicMenuClient({
                             </p>
                         </div>
                     ) : (
-                        <div className="space-y-5 grid grid-cols-2 space-x-5">
+                        <div className="space-y-5 grid grid-cols-1 space-x-5">
                             {filteredMeals.map(
                                 (meal) => {
                                     const quantity =
