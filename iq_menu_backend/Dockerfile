@@ -1,4 +1,3 @@
-
 FROM php:8.4-fpm-bookworm
 
 RUN apt-get update && apt-get install -y \
@@ -50,4 +49,4 @@ RUN sed -i 's/^listen = 9000/listen = 8100/' \
 
 EXPOSE 8100
 
-CMD ["php" , "artisan" , "serve" , "--port" , "8100"]
+CMD ["php" , "artisan" , "serve" , "--port" , "8100" , "--host" , "0.0.0.0"]

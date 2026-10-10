@@ -459,6 +459,7 @@ export default function UsersPage() {
 
                             <input
                                 type="password"
+                                min={8}
                                 dir="ltr"
                                 value={form.password}
                                 onChange={(e) =>
