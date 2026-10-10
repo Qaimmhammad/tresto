@@ -1,0 +1,21 @@
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Laravel
+/iq_menu_backend/.env
+/iq_menu_backend/vendor/
+/iq_menu_backend/storage/*.key
+
+# Next.js
+/tresto-frontend/.env*
+!/tresto-frontend/.env.example
+/tresto-frontend/node_modules/
+/tresto-frontend/.next/
+
+# Dependencies and local files
+**/node_modules/
+**/vendor/
+.DS_Store
+Thumbs.db
