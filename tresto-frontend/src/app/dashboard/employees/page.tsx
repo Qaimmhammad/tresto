@@ -119,17 +119,22 @@ export default function UsersPage() {
     }
 
     async function handleCreateUser() {
+        if (form.role !== "admin" && !form.branchId) {
+            setErrorMessage("يرجى اختيار الفرع أولاً.");
+            return;
+        }
         try {
             setIsSubmitting(true);
             setErrorMessage(null);
 
-            await createUserAction({
+            const result = await createUserAction({
                 name: form.name,
                 user_name: form.userName,
                 password: form.password,
                 role: form.role,
                 branch_id: form.branchId || null,
             });
+
 
             closeDialogs();
             await loadUsers();
