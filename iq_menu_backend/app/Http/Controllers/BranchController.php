@@ -37,6 +37,7 @@ class BranchController extends Controller
 
     public function store(StoreBranchRequest $request): JsonResponse
     {
+        
         $this->authorize('create', Branch::class);
 
         $branch = Branch::create([

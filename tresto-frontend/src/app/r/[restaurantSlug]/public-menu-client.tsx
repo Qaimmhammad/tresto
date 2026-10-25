@@ -177,6 +177,14 @@ export default function PublicMenuClient({
         (state) => state.getCartTotal
     );
 
+    const switchRestaurant = useOrderStore(
+        (state) => state.switchRestaurant
+    );
+
+    useEffect(() => {
+        switchRestaurant(restaurant.id);
+    }, [restaurant.id, switchRestaurant]);
+
     useEffect(() => {
         async function getData() {
             try {

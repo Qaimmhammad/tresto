@@ -135,6 +135,16 @@ export default function UsersPage() {
                 branch_id: form.branchId || null,
             });
 
+            if (!result.success) {
+                setErrorMessage(
+                    result.errors?.user_name?.[0] ===
+                        "The user name has already been taken."
+                        ? "اسم المستخدم هذا مأخوذ بالفعل، اختر اسماً آخر."
+                        : result.message,
+                );
+
+                return;
+            }
 
             closeDialogs();
             await loadUsers();
@@ -152,27 +162,41 @@ export default function UsersPage() {
     }
 
     async function handleUpdateUser() {
-        if (!editingUser) return;
+    if (!editingUser) return;
 
-        try {
-            setIsSubmitting(true);
+    try {
+        setIsSubmitting(true);
+        setErrorMessage(null);
 
-            await updateUserAction(editingUser.id, {
-                name: form.name,
-                userName: form.userName,
-                role: form.role,
-                branchId: form.branchId || null,
-            });
+        const result = await updateUserAction(editingUser.id, {
+            name: form.name,
+            userName: form.userName,
+            role: form.role,
+            branchId: form.branchId || null,
+            ...(form.password ? { password: form.password } : {}),
+        });
 
-            closeDialogs();
+        if (!result.success) {
+            const usernameError = result.errors?.user_name?.[0];
 
-            await loadUsers();
-        } catch (error) {
-            console.error("Failed to update user:", error);
-        } finally {
-            setIsSubmitting(false);
+            setErrorMessage(
+                usernameError === "The user name has already been taken."
+                    ? "اسم المستخدم هذا مأخوذ بالفعل، اختر اسماً آخر."
+                    : usernameError ?? result.message,
+            );
+
+            return;
         }
+
+        closeDialogs();
+        await loadUsers();
+    } catch (error) {
+        console.error("Failed to update user:", error);
+        setErrorMessage("حدث خطأ أثناء تعديل المستخدم. حاول مرة أخرى.");
+    } finally {
+        setIsSubmitting(false);
     }
+}
 
     async function handleDeleteUser() {
         if (!selectedUser) return;

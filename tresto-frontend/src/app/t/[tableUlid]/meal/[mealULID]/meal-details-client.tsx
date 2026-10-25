@@ -231,15 +231,15 @@ export default function MealDetailsClient({
                                                         !meal.isAvailable
                                                     }
                                                     className={`flex w-full items-center justify-between rounded-2xl border p-4 text-right transition ${selected
-                                                            ? "border-[#B42318] bg-[#B42318]/5"
-                                                            : "border-gray-200 bg-white"
+                                                        ? "border-[#B42318] bg-[#B42318]/5"
+                                                        : "border-gray-200 bg-white"
                                                         }`}
                                                 >
                                                     <div className="flex items-center gap-3">
                                                         <div
                                                             className={`flex h-5 w-5 items-center justify-center rounded-full border ${selected
-                                                                    ? "border-[#B42318] bg-[#B42318]"
-                                                                    : "border-gray-300"
+                                                                ? "border-[#B42318] bg-[#B42318]"
+                                                                : "border-gray-300"
                                                                 }`}
                                                         >
                                                             {selected && (
@@ -359,31 +359,17 @@ export default function MealDetailsClient({
             </div>
 
             {cart.length > 0 && (
-                <div className="fixed bottom-4 left-4 right-4 z-40 mx-auto max-w-3xl">
-                    <button
-                        type="button"
-                        onClick={() =>
-                            setCartOpen(true)
-                        }
-                        className="flex w-full items-center justify-between rounded-2xl px-5 py-4 font-bold shadow-xl"
-                        style={{
-                            backgroundColor:
-                                primaryColor,
-                            color: primaryTextColor,
-                        }}
-                    >
-                        <div className="flex items-center gap-2">
-                            <ShoppingBag className="h-5 w-5" />
-                            <span>متابعة الطلب</span>
-                        </div>
+                <div className="flex items-center justify-between rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                    <span className="text-sm font-bold text-gray-600">
+                        الإجمالي
+                    </span>
 
-                        <span>
-                            {formatPrice(cartTotal)}
-                        </span>
-                    </button>
+                    <span className="text-xl font-extrabold text-[#B42318]">
+                        {formatPrice(cartTotal)}
+                    </span>
                 </div>
             )}
-
+            
             {cartOpen && (
                 <div
                     className="fixed inset-0 z-50 bg-black/40"

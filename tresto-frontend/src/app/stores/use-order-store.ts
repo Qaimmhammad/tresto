@@ -54,6 +54,7 @@ export interface OrderState {
     orders: OrderModel[];
     isLoading: boolean;
     error: string | null;
+    restaurantId: string | null;
 
     addItem: (item: OrderItemPayload) => void;
     removeItem: (
@@ -77,6 +78,7 @@ export interface OrderState {
         tableId: string | number,
         data: CreateDineInOrderPayload
     ) => Promise<any>;
+    switchRestaurant: (restaurantId: string) => void;
 }
 
 export const useOrderStore = create<OrderState>()(
@@ -86,6 +88,7 @@ export const useOrderStore = create<OrderState>()(
             orders: [],
             isLoading: false,
             error: null,
+            restaurantId: null,
 
             addItem: (newItem) => {
                 set((state) => {
@@ -168,14 +171,14 @@ export const useOrderStore = create<OrderState>()(
                     return {
                         cart: state.cart.map((item) =>
                             item.mealId === mealId &&
-                            optionsEqual(
-                                item.selectedOptions,
-                                selectedOptions
-                            )
+                                optionsEqual(
+                                    item.selectedOptions,
+                                    selectedOptions
+                                )
                                 ? {
-                                      ...item,
-                                      quantity,
-                                  }
+                                    ...item,
+                                    quantity,
+                                }
                                 : item
                         ),
                     };
@@ -189,7 +192,7 @@ export const useOrderStore = create<OrderState>()(
                     (total, item) =>
                         total +
                         (item.price || 0) *
-                            item.quantity,
+                        item.quantity,
                     0
                 );
             },
@@ -287,6 +290,19 @@ export const useOrderStore = create<OrderState>()(
                     throw err;
                 }
             },
+            switchRestaurant: (restaurantId: string | null) => {
+                const currentRestaurantId = get().restaurantId;
+
+                if (currentRestaurantId === restaurantId) {
+                    return;
+                }
+
+                set({
+                    restaurantId,
+                    cart: [],
+                });
+            },
+
         }),
         {
             name: "tresto-order-storage",
@@ -295,6 +311,8 @@ export const useOrderStore = create<OrderState>()(
             ),
             partialize: (state) => ({
                 cart: state.cart,
+                restaurantId: state.restaurantId,
+
             }),
         }
     )
