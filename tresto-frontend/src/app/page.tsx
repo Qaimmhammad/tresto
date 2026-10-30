@@ -2,12 +2,13 @@ import Image from "next/image";
 import MenuBurgerIcon from "./components/menu-burger-icon";
 import Link from "next/link";
 import Header from "./components/header";
-import { 
-  MonitorSmartphone, 
-  QrCode, 
-  ClipboardList, 
-  Store, 
-  MenuSquare, 
+import type { Metadata } from 'next';
+import {
+  MonitorSmartphone,
+  QrCode,
+  ClipboardList,
+  Store,
+  MenuSquare,
   CreditCard,
   Armchair,
   PackageCheck,
@@ -15,16 +16,22 @@ import {
   ArrowLeft
 } from "lucide-react";
 
+export const metadata: Metadata = {
+  title: "Tresto",
+  description: "مو بس منيو، نظام يزيد ارباحك"
+}
+
 export default function Home() {
+
   return (
     <div dir="rtl" className="bg-[#FAFAFA] text-foreground font-sans min-h-screen">
-      <Header />      
+      <Header />
 
       <main className="pb-24">
         {/* Hero Section */}
         <section className="px-6 md:px-12 pt-16 pb-12 flex flex-col items-center text-center">
           <h1 className="text-5xl md:text-7xl font-black text-[#1A1A1A] leading-[1.2] mb-6">
-            مطعمك، فروعك،<br/><span>وجباتك</span><br/>
+            مطعمك، فروعك،<br /><span>وجباتك</span><br />
             <span className="text-primary">بمكان واحد</span>
           </h1>
           <p className="text-gray-500 text-lg md:text-xl max-w-2xl leading-relaxed mb-10">
@@ -45,9 +52,9 @@ export default function Home() {
               <h2 className="text-2xl font-bold text-[#4B2763]">لوحة تحكم</h2>
               <span className="bg-red-50 text-primary text-xs font-bold px-3 py-1 rounded-full">مباشر</span>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              
+
               <div className="bg-gray-50/50 rounded-2xl p-6 flex flex-col items-center justify-center border border-gray-100 hover:border-primary/20 transition-colors">
                 <PackageCheck className="w-10 h-10 text-gray-400 mb-4" />
                 <span className="text-4xl font-black text-gray-800 mb-1">124</span>
@@ -66,7 +73,7 @@ export default function Home() {
         <section className="px-6 md:px-12 py-16 max-w-5xl mx-auto text-center">
           <h2 className="text-3xl font-black text-gray-900 mb-4">مميزات متكاملة</h2>
           <p className="text-gray-500 mb-12">كل ما تحتاجه للارتقاء بمطعمك وإدارته بكفاءة</p>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-right">
             {[
               { icon: MonitorSmartphone, title: 'المنيو الرقمي', desc: 'عرض قائمة طعامك بطريقة عصرية جذابة.' },
@@ -90,10 +97,10 @@ export default function Home() {
         <section className="px-6 md:px-12 py-8 bg-[#FBF9FE] mt-12 border-y border-gray-100">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-black text-gray-900 mb-16">كيف يعمل؟</h2>
-            
+
             <div className="flex flex-col md:flex-row justify-between items-center gap-8 relative">
               <div className="hidden md:block absolute top-1/2 right-0 w-full h-0.5 bg-gray-200 -z-10 -translate-y-1/2"></div>
-              
+
               {[
                 { step: '01', title: 'انشاء حساب جديد' },
                 { step: '02', title: 'لوحة تحكم' },
@@ -120,7 +127,7 @@ export default function Home() {
             ابدأ الآن
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          
+
           <div className="flex flex-col md:flex-row items-center justify-between border-t border-gray-100 pt-8 gap-6">
             <div className="text-[#4B2763] text-2xl font-black tracking-tight">
               آي كيو منيو

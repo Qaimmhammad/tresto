@@ -105,4 +105,4 @@ networks:
   app:
 
 volumes:
-  postgres_data
+  postgres_data:
